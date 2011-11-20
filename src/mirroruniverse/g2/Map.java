@@ -19,12 +19,23 @@ public class Map {
 			this.value = value;
 		}
 	};
+	
+	public boolean isExit(Position pos) {
+		if (exitPos != null)
+			if (exitPos.x == pos.x && exitPos.y == pos.y)
+				return true;
+		return false;
+	}
+	
+	public boolean isValid(Position pos) {
+		if (map[pos.x][pos.y] == Tile.EMPTY.value)
+			return true;
+		return false;
+	}
 
 	public Map(String name) {
 		this.name = name;
-		playerPos = new Position();
-		playerPos.x = MAX_SIZE / 2;
-		playerPos.y = MAX_SIZE / 2;
+		playerPos = new Position(MAX_SIZE / 2, MAX_SIZE / 2);
 		exitPos = null;
 
 		map = new int[MAX_SIZE][MAX_SIZE];
@@ -43,10 +54,7 @@ public class Map {
 		}
 	}
 
-	public class Position {
-		int x;
-		int y;
-	}
+
 
 	public void updateView(int[][] view) {
 		int center = view.length / 2;
@@ -55,9 +63,7 @@ public class Map {
 				map[playerPos.x + i][playerPos.y + j] = view[center + i][center + j];
 				if (view[center + i][center + j] == 2) {
 					if (exitPos == null) {
-						exitPos = new Position();
-						exitPos.x = center + i;
-						exitPos.y = center + j;
+						exitPos = new Position(center + i, center + j);
 					}
 				}
 			}
