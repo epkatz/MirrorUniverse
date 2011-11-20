@@ -9,11 +9,11 @@ public class Map {
 	public Position playerPos;
 	public Position exitPos;
 	public int[][] map;
-	public final int GUARANTEED_SIZE = 100;
+	public final int GUARANTEED_SIZE = 5;
 	public final int MAX_SIZE = GUARANTEED_SIZE * 2 + 1;
 	public final int RADIUS = 3;
 	public enum Tile {
-		UNKNOWN (8), BARRIER (1), EMPTY (0), END(2);
+		UNKNOWN (8), BARRIER (1), EMPTY (0), EXIT(2);
 		private int value;
 		private Tile (int value) {
 			this.value = value;
@@ -34,6 +34,14 @@ public class Map {
 			}
 		}
 	}
+	
+	public void updatePlayer(int[] newPos) {
+		if (map[(playerPos.x+newPos[0])][(playerPos.y+newPos[1])] == Tile.EMPTY.value ||
+				map[(playerPos.x+newPos[0])][(playerPos.y+newPos[1])] == Tile.EXIT.value) {
+			playerPos.x += newPos[0];
+			playerPos.y += newPos[1];
+		}
+	}
 
 	public class Position {
 		int x;
@@ -42,12 +50,20 @@ public class Map {
 
 	public void updateView(int[][] view) {
 		int center = view.length / 2;
-		for (int i = -1; i <= 1; i++) {
-			for (int j = -1; j <= 1; j++) {
-				map[playerPos.x + j][playerPos.y + i] = view[center + j][center + i];
+		for (int i = -view.length/2; i <= view.length/2; i++) {
+			for (int j = -view.length/2; j <= view.length/2; j++) {
+				map[playerPos.x + i][playerPos.y + j] = view[center + i][center + j];
+				if (view[center + i][center + j] == 2) {
+					if (exitPos == null) {
+						exitPos = new Position();
+						exitPos.x = center + i;
+						exitPos.y = center + j;
+					}
+				}
 			}
 		}
-		System.out.println(name + " has map\n"+printMap());
+		if (name.equals("Right"))
+			System.out.println(name + " has map\n" + printMap());
 	}
 
 	private String whatIsee(int[][] view) {
@@ -62,10 +78,25 @@ public class Map {
 	}
 	
 	private String printMap() {
-		String ret = "";
+		String ret = "   ";
 		for (int i = 0; i < map.length; i++) {
+			if (i < 10)
+				ret += i + "  ";
+			else
+				ret += i + " ";
+		}
+		ret += "\n";
+		for (int i = 0; i < map.length; i++) {
+			if (i < 10)
+				ret += i + "  ";
+			else
+				ret += i + " ";
 			for (int j = 0; j < map.length; j++) {
-				ret += map[i][j] + " ";
+				if (playerPos.x == i && playerPos.y == j) {
+					ret += "X" + "  ";
+				} else {
+					ret += map[i][j] + "  ";
+				}
 			}
 			ret += "\n";
 		}

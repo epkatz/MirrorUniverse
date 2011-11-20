@@ -1,5 +1,8 @@
 package mirroruniverse.g2;
 
+import java.util.Random;
+
+import mirroruniverse.sim.MUMap;
 import mirroruniverse.sim.Player;
 
 public class WallFlower implements Player {
@@ -26,7 +29,13 @@ public class WallFlower implements Player {
 	}
 		
 	public int move() {
-		return 1;
+		Random rdmTemp = new Random();
+		int nextX = rdmTemp.nextInt(3);
+		int nextY = rdmTemp.nextInt(3);
+		int d = MUMap.aintMToD[nextX][nextY];
+		rightMap.updatePlayer(MUMap.aintDToM[d]);
+		leftMap.updatePlayer(MUMap.aintDToM[d]);
+		return d;
 	}
 	
 }
