@@ -3,6 +3,7 @@ package mirroruniverse.g2.astar;
 import java.util.List;
 
 import mirroruniverse.g2.Map;
+import mirroruniverse.g2.Position;
 
 public class MirrorUniverseAStar extends AStar<State> {
 	Map leftMap;
@@ -15,7 +16,20 @@ public class MirrorUniverseAStar extends AStar<State> {
 
 	@Override
 	protected boolean isGoal(State node) {
-		// TODO Auto-generated method stub
+		// if we haven't found the exits yet
+		if (leftMap.exitPos == null || rightMap.exitPos == null)
+			return false;
+		
+		// now we know the position of the exits
+		Position posLeft = node.posLeft;
+		Position posRight = node.posRight;
+		Position exitLeft = leftMap.exitPos;
+		Position exitRight = rightMap.exitPos;
+		
+		// if they are the same, both left and right
+		if(posLeft.x == exitLeft.x && posLeft.y == exitLeft.y
+				&& posRight.x == exitRight.x && posRight.y == exitRight.y)
+			return true;
 		return false;
 	}
 

@@ -35,10 +35,7 @@ public class Map {
 		}
 	}
 
-	public class Position {
-		public int x;
-		public int y;
-	}
+
 
 	public void updateView(int[][] view) {
 		int center = view.length / 2;
