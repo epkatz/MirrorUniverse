@@ -36,8 +36,8 @@ public class Map {
 	}
 
 	public class Position {
-		int x;
-		int y;
+		public int x;
+		public int y;
 	}
 
 	public void updateView(int[][] view) {
