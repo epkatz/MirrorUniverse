@@ -26,7 +26,7 @@ public class WallFlower implements Player {
 	}
 		
 	public int move() {
-		return 0;
+		return 1;
 	}
 	
 }
