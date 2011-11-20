@@ -19,6 +19,12 @@ public class Map {
 			this.value = value;
 		}
 	};
+	
+	public boolean isValid(Position pos) {
+		if (map[pos.x][pos.y] == Tile.EMPTY.value)
+			return true;
+		return false;
+	}
 
 	public Map(String name) {
 		this.name = name;
