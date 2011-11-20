@@ -22,9 +22,7 @@ public class Map {
 
 	public Map(String name) {
 		this.name = name;
-		playerPos = new Position();
-		playerPos.x = MAX_SIZE / 2;
-		playerPos.y = MAX_SIZE / 2;
+		playerPos = new Position(MAX_SIZE / 2, MAX_SIZE / 2);
 		exitPos = null;
 
 		map = new int[MAX_SIZE][MAX_SIZE];
@@ -35,10 +33,7 @@ public class Map {
 		}
 	}
 
-	public class Position {
-		public int x;
-		public int y;
-	}
+
 
 	public void updateView(int[][] view) {
 		int center = view.length / 2;

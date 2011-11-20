@@ -1,6 +1,6 @@
 package mirroruniverse.g2.astar;
 
-import mirroruniverse.g2.Map.Position;
+import mirroruniverse.g2.Position;
 
 public class State {
 	Position posLeft;
