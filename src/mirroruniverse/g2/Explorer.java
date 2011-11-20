@@ -1,9 +1,11 @@
 package mirroruniverse.g2;
 
 public class Explorer {
-	private Info info;
+	Map leftMap;
+	Map rightMap;
 
-	public Explorer(Info info) {
-		this.info = info;
+	public Explorer(Map leftMap, Map rightMap) {
+		this.leftMap = leftMap;
+		this.rightMap = rightMap;
 	}
 }
