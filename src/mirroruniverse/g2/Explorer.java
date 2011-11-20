@@ -1,11 +1,9 @@
 package mirroruniverse.g2;
 
 public class Explorer {
-	
-	//Map
-	//Player Position
-	//Exit Position
-	
-	
+	private Info info;
 
+	public Explorer(Info info) {
+		this.info = info;
+	}
 }
