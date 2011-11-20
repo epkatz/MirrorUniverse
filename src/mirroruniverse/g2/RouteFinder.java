@@ -2,19 +2,10 @@ package mirroruniverse.g2;
 
 import mirroruniverse.sim.Player;
 
-public class RouteFinder implements Player {
+public class RouteFinder{
 	Info info;
-	Explorer explorer;
-	RouteFinder routeFinder;
 	
-	
-	
-	@Override
-	public int lookAndMove(int[][] aintViewL, int[][] aintViewR) {
-		
-		return 0;
+	public RouteFinder(Info info){
+		this.info = info;
 	}
-	
-	
-
 }
