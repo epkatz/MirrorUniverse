@@ -20,6 +20,13 @@ public class Map {
 		}
 	};
 	
+	public boolean isExit(Position pos) {
+		if (exitPos != null)
+			if (exitPos.x == pos.x && exitPos.y == pos.y)
+				return true;
+		return false;
+	}
+	
 	public boolean isValid(Position pos) {
 		if (map[pos.x][pos.y] == Tile.EMPTY.value)
 			return true;
