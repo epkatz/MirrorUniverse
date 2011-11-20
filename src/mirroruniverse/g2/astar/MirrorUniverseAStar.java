@@ -2,7 +2,16 @@ package mirroruniverse.g2.astar;
 
 import java.util.List;
 
+import mirroruniverse.g2.Map;
+
 public class MirrorUniverseAStar extends AStar<State> {
+	Map leftMap;
+	Map rightMap;
+	
+	public MirrorUniverseAStar(Map leftMap, Map rightMap) {
+		this.leftMap = leftMap;
+		this.rightMap = rightMap;
+	}
 
 	@Override
 	protected boolean isGoal(State node) {
