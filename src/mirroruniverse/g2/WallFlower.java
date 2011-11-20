@@ -5,17 +5,15 @@ import mirroruniverse.sim.Player;
 public class WallFlower implements Player {
 
 	private Explorer explorer;
-	private Info info;
 	private RouteFinder routeFinder;
 	Map rightMap;
 	Map leftMap;
-	
+
 	public WallFlower() {
-		this.info = new Info();
-		this.explorer = new Explorer(this.info);
-		this.routeFinder = new RouteFinder(this.info);	
 		rightMap = new Map("Right");
 		leftMap = new Map("Left");
+		this.explorer = new Explorer(this.leftMap, this.rightMap);
+		this.routeFinder = new RouteFinder(this.leftMap, this.rightMap);
 	}
 
 	@Override
@@ -24,9 +22,9 @@ public class WallFlower implements Player {
 		rightMap.updateView(aintViewR);
 		return move();
 	}
-		
+
 	public int move() {
-		return 1;
+		return 0;
 	}
-	
+
 }
