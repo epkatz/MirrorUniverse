@@ -30,8 +30,10 @@ public class WallFlower implements Player {
 		Random rdmTemp = new Random();
 		int nextX = rdmTemp.nextInt(3);
 		int nextY = rdmTemp.nextInt(3);
+
 		int d = MUMap.aintMToD[nextX][nextY];
 		System.out.println("Next move is :" + MUMap.aintDToM[d][0] + " "+MUMap.aintDToM[d][1] );
+
 		rightMap.updatePlayer(MUMap.aintDToM[d]);
 		leftMap.updatePlayer(MUMap.aintDToM[d]);
 		return d;

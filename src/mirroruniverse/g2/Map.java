@@ -28,7 +28,7 @@ public class Map {
 	}
 	
 	public boolean isValid(Position pos) {
-		if (map[pos.x][pos.y] == Tile.EMPTY.value)
+		if (map[pos.y][pos.x] == Tile.EMPTY.value)
 			return true;
 		return false;
 	}
@@ -47,6 +47,7 @@ public class Map {
 	}
 	
 	public void updatePlayer(int[] newPos) {
+
 		
 		if (map[(playerPos.x+newPos[0])][(playerPos.y+newPos[1])] == Tile.EMPTY.value ||
 				map[(playerPos.x+newPos[0])][(playerPos.y+newPos[1])] == Tile.EXIT.value) { 
@@ -72,9 +73,15 @@ public class Map {
 
 	public void updateView(int[][] view) {
 		int center = view.length / 2;
+		
 		for (int i = -view.length/2; i <= view.length/2; i++) {
 			for (int j = -view.length/2; j <= view.length/2; j++) {
-				map[playerPos.x + i][playerPos.y + j] = view[center + i][center + j];
+				if (!isLegalPosition(playerPos.y, i) || !isLegalPosition(playerPos.x, j)) {
+					continue;
+				}
+				if (map[playerPos.y + i][playerPos.x + j] == Tile.UNKNOWN.value) {
+					map[playerPos.y + i][playerPos.x + j] = view[center + i][center + j];
+				}
 				if (view[center + i][center + j] == 2) {
 					if (exitPos == null) {
 						exitPos = new Position(center + i, center + j);
@@ -82,8 +89,11 @@ public class Map {
 				}
 			}
 		}
-		if (name.equals("Right"))
+		if (name.equals("Right")) {
 			System.out.println(name + " has map\n" + printMap());
+			System.out.println(whatIsee(view));
+		}
+		
 	}
 
 	private String whatIsee(int[][] view) {
@@ -112,6 +122,7 @@ public class Map {
 			else
 				ret += i + " ";
 			for (int j = 0; j < map.length; j++) {
+
 				if (playerPos.x == j && playerPos.y == i) {
 					ret += "X" + "  ";
 				} else {
@@ -121,6 +132,13 @@ public class Map {
 			ret += "\n";
 		}
 		return ret;
+	}
+	
+	public boolean isLegalPosition(int v, int add) {
+		if (v + add < 0 || v + add >= MAX_SIZE) {
+			return false;
+		}
+		return true;
 	}
 
 }
