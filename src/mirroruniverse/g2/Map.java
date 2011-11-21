@@ -9,6 +9,7 @@ public class Map {
 	public Position playerPos;
 	public Position exitPos;
 	public int[][] map;
+	//MUST CHANGE THIS TO HIGH NUMBER
 	public final int GUARANTEED_SIZE = 5;
 	public final int MAX_SIZE = GUARANTEED_SIZE * 2 + 1;
 	public enum Tile {
