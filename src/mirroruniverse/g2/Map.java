@@ -11,7 +11,6 @@ public class Map {
 	public int[][] map;
 	public final int GUARANTEED_SIZE = 5;
 	public final int MAX_SIZE = GUARANTEED_SIZE * 2 + 1;
-	public final int RADIUS = 3;
 	public enum Tile {
 		UNKNOWN (8), BARRIER (1), EMPTY (0), EXIT(2);
 		private int value;
