@@ -49,9 +49,15 @@ public class Map {
 	public void updatePlayer(int[] newPos) {
 
 		
-		if (map[(playerPos.x+newPos[0])][(playerPos.y+newPos[1])] == Tile.EMPTY.value ||
-				map[(playerPos.x+newPos[0])][(playerPos.y+newPos[1])] == Tile.EXIT.value) { 
+		if (map[(playerPos.y+newPos[1])][(playerPos.x+newPos[0])] == Tile.EMPTY.value ||
+				map[(playerPos.y+newPos[1])][(playerPos.x+newPos[0])] == Tile.EXIT.value) {
 			
+			if (exitPos != null) {
+				if (playerPos.x == exitPos.x && playerPos.y == exitPos.y) {
+					return;
+				}
+			}
+					
 			if(name.equals("Right")){
 				System.out.println("Player Right: " + playerPos.x + " " + playerPos.y);
 				System.out.println("Next Move Right: " + map[(playerPos.x+newPos[0])][(playerPos.y+newPos[1])] );
@@ -59,11 +65,11 @@ public class Map {
 				playerPos.y += newPos[1];
 				System.out.println("Player Right Next Position: " + playerPos.x+ " " + playerPos.y);
 			}else{
-				System.out.println("Player Left: " + playerPos.x + " " + playerPos.y);
-				System.out.println("Next Move Left: " + map[(playerPos.x+newPos[0])][(playerPos.y+newPos[1])] );
+				//System.out.println("Player Left: " + playerPos.x + " " + playerPos.y);
+				//System.out.println("Next Move Left: " + map[(playerPos.x+newPos[0])][(playerPos.y+newPos[1])] );
 				playerPos.x += newPos[0];
 				playerPos.y += newPos[1];
-				System.out.println("Player Left Next Position: " + playerPos.x + " " + playerPos.y);
+				//System.out.println("Player Left Next Position: " + playerPos.x + " " + playerPos.y);
 			}
 			
 		}
