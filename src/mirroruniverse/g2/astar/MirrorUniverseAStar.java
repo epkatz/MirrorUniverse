@@ -45,6 +45,14 @@ public class MirrorUniverseAStar extends AStar<State> {
 		// TODO Auto-generated method stub
 		double x1,x2,y1,y2,deltaX,deltaY,diagonal;
 		
+		int[][] leftMap = this.leftMap.map;
+		Position leftPos = this.leftMap.playerPos;
+		Position exit = this.leftMap.exitPos;
+		
+		
+		
+		
+		
 		
 		x1 = from.posLeft.x;
 		y1 = from.posLeft.y;
