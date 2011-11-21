@@ -28,6 +28,8 @@ public class Map {
 	}
 	
 	public boolean isValid(Position pos) {
+		if (pos.x < 0 || pos.x >= MAX_SIZE || pos.y < 0 || pos.y >= MAX_SIZE)
+			return false;
 		if (map[pos.y][pos.x] == Tile.EMPTY.value)
 			return true;
 		return false;

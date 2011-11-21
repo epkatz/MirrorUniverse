@@ -10,4 +10,11 @@ public class State {
 		this.posLeft = posLeft;
 		this.posRight = posRight;
 	}
+
+	public boolean equals(State rhs) {
+		if (posLeft.x == rhs.posLeft.x && posLeft.y == rhs.posLeft.y
+				&& posRight.x == rhs.posRight.x && posRight.y == rhs.posRight.y )
+			return true;
+		return false;
+	}
 }
