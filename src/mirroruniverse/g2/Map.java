@@ -10,7 +10,7 @@ public class Map {
 	public Position exitPos;
 	public int[][] map;
 	//MUST CHANGE THIS TO HIGH NUMBER
-	public final int GUARANTEED_SIZE = 5;
+	public final int GUARANTEED_SIZE = 10;
 	public final int MAX_SIZE = GUARANTEED_SIZE * 2 + 1;
 	public enum Tile {
 		UNKNOWN (8), BARRIER (1), EMPTY (0), EXIT(2);
@@ -55,6 +55,7 @@ public class Map {
 				map[(playerPos.y+newPos[1])][(playerPos.x+newPos[0])] == Tile.EXIT.value) {
 			
 			if (exitPos != null) {
+				System.out.println("Exit at: " + exitPos.x + " and " + exitPos.y);
 				if (playerPos.x == exitPos.x && playerPos.y == exitPos.y) {
 					return;
 				}
@@ -67,11 +68,11 @@ public class Map {
 				playerPos.y += newPos[1];
 				System.out.println("Player Right Next Position: " + playerPos.x+ " " + playerPos.y);
 			}else{
-				//System.out.println("Player Left: " + playerPos.x + " " + playerPos.y);
-				//System.out.println("Next Move Left: " + map[(playerPos.x+newPos[0])][(playerPos.y+newPos[1])] );
+				System.out.println("Player Left: " + playerPos.x + " " + playerPos.y);
+				System.out.println("Next Move Left: " + map[(playerPos.x+newPos[0])][(playerPos.y+newPos[1])] );
 				playerPos.x += newPos[0];
 				playerPos.y += newPos[1];
-				//System.out.println("Player Left Next Position: " + playerPos.x + " " + playerPos.y);
+				System.out.println("Player Left Next Position: " + playerPos.x + " " + playerPos.y);
 			}
 			
 		}
@@ -92,7 +93,7 @@ public class Map {
 				}
 				if (view[center + i][center + j] == 2) {
 					if (exitPos == null) {
-						exitPos = new Position(center + i, center + j);
+						exitPos = new Position(playerPos.y + i, playerPos.x + j);
 					}
 				}
 			}
