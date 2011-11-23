@@ -1,4 +1,3 @@
-
 package mirroruniverse.g2;
 
 import mirroruniverse.sim.MUMap;
@@ -9,87 +8,83 @@ public class Map {
 	public Position playerPos;
 	public Position exitPos;
 	public int[][] map;
-	//MUST CHANGE THIS TO HIGH NUMBER
-	public final int GUARANTEED_SIZE = 10;
-	public final int MAX_SIZE = GUARANTEED_SIZE * 2 + 1;
+
 	public enum Tile {
-		UNKNOWN (8), BARRIER (1), EMPTY (0), EXIT(2);
+		UNKNOWN(8), BARRIER(1), EMPTY(0), EXIT(2);
 		private int value;
-		private Tile (int value) {
+
+		private Tile(int value) {
 			this.value = value;
 		}
 	};
-	
+
 	public boolean isExit(Position pos) {
 		if (exitPos != null)
 			if (exitPos.x == pos.x && exitPos.y == pos.y)
 				return true;
 		return false;
 	}
-	
-	public boolean isValid(Position pos) {
-		if (pos.x < 0 || pos.x >= MAX_SIZE || pos.y < 0 || pos.y >= MAX_SIZE)
+
+	public boolean isUnknown(Position pos) {
+		if (pos.x < 0 || pos.x >= Config.MAX_SIZE || pos.y < 0
+				|| pos.y >= Config.MAX_SIZE)
 			return false;
-		if (map[pos.y][pos.x] == Tile.EMPTY.value)
+		if (map[pos.y][pos.x] == Tile.UNKNOWN.value)
+			return true;
+		return false;
+	}
+
+	public boolean isValid(Position pos) {
+		if (pos.x < 0 || pos.x >= Config.MAX_SIZE || pos.y < 0
+				|| pos.y >= Config.MAX_SIZE)
+			return false;
+		if (map[pos.y][pos.x] == Tile.EMPTY.value
+				|| map[pos.y][pos.x] == Tile.EXIT.value)
 			return true;
 		return false;
 	}
 
 	public Map(String name) {
 		this.name = name;
-		playerPos = new Position(MAX_SIZE / 2, MAX_SIZE / 2);
+		playerPos = new Position(Config.MAX_SIZE / 2, Config.MAX_SIZE / 2);
 		exitPos = null;
 
-		map = new int[MAX_SIZE][MAX_SIZE];
+		map = new int[Config.MAX_SIZE][Config.MAX_SIZE];
 		for (int i = 0; i < map.length; i++) {
 			for (int j = 0; j < map.length; j++) {
 				map[i][j] = Tile.UNKNOWN.value;
 			}
 		}
 	}
-	
+
 	public void updatePlayer(int[] newPos) {
 
-		
-		if (map[(playerPos.y+newPos[1])][(playerPos.x+newPos[0])] == Tile.EMPTY.value ||
-				map[(playerPos.y+newPos[1])][(playerPos.x+newPos[0])] == Tile.EXIT.value) {
-			
+		if (map[(playerPos.y + newPos[1])][(playerPos.x + newPos[0])] == Tile.EMPTY.value
+				|| map[(playerPos.y + newPos[1])][(playerPos.x + newPos[0])] == Tile.EXIT.value) {
+
 			if (exitPos != null) {
-				System.out.println("Exit at: " + exitPos.x + " and " + exitPos.y);
 				if (playerPos.x == exitPos.x && playerPos.y == exitPos.y) {
 					return;
 				}
 			}
-					
-			if(name.equals("Right")){
-				System.out.println("Player Right: " + playerPos.x + " " + playerPos.y);
-				System.out.println("Next Move Right: " + map[(playerPos.x+newPos[0])][(playerPos.y+newPos[1])] );
-				playerPos.x += newPos[0];
-				playerPos.y += newPos[1];
-				System.out.println("Player Right Next Position: " + playerPos.x+ " " + playerPos.y);
-			}else{
-				System.out.println("Player Left: " + playerPos.x + " " + playerPos.y);
-				System.out.println("Next Move Left: " + map[(playerPos.x+newPos[0])][(playerPos.y+newPos[1])] );
-				playerPos.x += newPos[0];
-				playerPos.y += newPos[1];
-				System.out.println("Player Left Next Position: " + playerPos.x + " " + playerPos.y);
-			}
-			
+
+			playerPos.x += newPos[0];
+			playerPos.y += newPos[1];
 		}
 	}
 
-
-
 	public void updateView(int[][] view) {
 		int center = view.length / 2;
-		
-		for (int i = -view.length/2; i <= view.length/2; i++) {
-			for (int j = -view.length/2; j <= view.length/2; j++) {
-				if (!isLegalPosition(playerPos.y, i) || !isLegalPosition(playerPos.x, j)) {
+
+		for (int i = -view.length / 2; i <= view.length / 2; i++) {
+			for (int j = -view.length / 2; j <= view.length / 2; j++) {
+				if (!isLegalPosition(playerPos.y, i)
+						|| !isLegalPosition(playerPos.x, j)) {
 					continue;
 				}
 				if (map[playerPos.y + i][playerPos.x + j] == Tile.UNKNOWN.value) {
-					map[playerPos.y + i][playerPos.x + j] = view[center + i][center + j];
+					map[playerPos.y + i][playerPos.x + j] = view[center + i][center
+							+ j];
 				}
 				if (view[center + i][center + j] == 2) {
 					if (exitPos == null) {
@@ -98,11 +93,11 @@ public class Map {
 				}
 			}
 		}
-		if (name.equals("Right")) {
+		if (Config.DEBUG) {
+			System.out.println(name + " has view\n" + whatIsee(view));
 			System.out.println(name + " has map\n" + printMap());
-			System.out.println(whatIsee(view));
 		}
-		
+
 	}
 
 	private String whatIsee(int[][] view) {
@@ -115,7 +110,7 @@ public class Map {
 		}
 		return ret;
 	}
-	
+
 	private String printMap() {
 		String ret = "   ";
 		for (int i = 0; i < map.length; i++) {
@@ -142,9 +137,9 @@ public class Map {
 		}
 		return ret;
 	}
-	
+
 	public boolean isLegalPosition(int v, int add) {
-		if (v + add < 0 || v + add >= MAX_SIZE) {
+		if (v + add < 0 || v + add >= Config.MAX_SIZE) {
 			return false;
 		}
 		return true;

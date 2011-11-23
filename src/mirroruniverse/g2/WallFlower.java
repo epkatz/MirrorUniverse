@@ -15,7 +15,6 @@ public class WallFlower implements Player {
 	private RouteFinder routeFinder;
 	Map rightMap;
 	Map leftMap;
-	List<State> route;
 
 	public WallFlower() {
 		rightMap = new Map("Right");
@@ -29,27 +28,24 @@ public class WallFlower implements Player {
 		leftMap.updateView(aintViewL);
 		rightMap.updateView(aintViewR);
 
-		if (leftMap.exitPos != null && rightMap.exitPos != null)
-			route = routeFinder.searchPath();
-		if (route != null) {
-			System.out.println("Path Found");
-			// follow the path
+		if (leftMap.exitPos != null && rightMap.exitPos != null && !routeFinder.pathFound())
+			 routeFinder.searchPath();
+
+		int nextMove = -1;
+		
+		if (routeFinder.pathFound()) {
+			if (Config.DEBUG)
+				System.out.println("Follow the path");
+			nextMove = routeFinder.getMove();
+		} else {
+			if (Config.DEBUG)
+				System.out.println("Explore");
+			nextMove = explorer.getMove();
 		}
-		return move();
-	}
-
-	public int move() {
-		Random rdmTemp = new Random();
-		int nextX = rdmTemp.nextInt(3);
-		int nextY = rdmTemp.nextInt(3);
-
-		int d = MUMap.aintMToD[nextX][nextY];
-		System.out.println("Next move is :" + MUMap.aintDToM[d][0] + " "
-				+ MUMap.aintDToM[d][1]);
-
-		rightMap.updatePlayer(MUMap.aintDToM[d]);
-		leftMap.updatePlayer(MUMap.aintDToM[d]);
-		return d;
+		
+		leftMap.updatePlayer(MUMap.aintDToM[nextMove]);
+		rightMap.updatePlayer(MUMap.aintDToM[nextMove]);
+		return nextMove;
 	}
 
 }

@@ -26,7 +26,7 @@ import java.util.*;
  * @author Giuseppe Scrivano
  */
 public abstract class AStar<T> {
-	private class Node implements Comparable {
+	protected class Node implements Comparable {
 		public T state;
 		public Double f;
 		public Double g;
@@ -125,12 +125,11 @@ public abstract class AStar<T> {
 	 *            The node we want to expand.
 	 * @return A list of possible next steps.
 	 */
-	protected abstract List<T> generateSuccessors(T node);
+	protected abstract List<T> generateSuccessors(Node node);
 
-	private PriorityQueue<Node> paths;
-	private HashMap<T, Double> mindists;
-	private Double lastCost;
-	private int expandedCounter;
+	protected PriorityQueue<Node> fringe;
+	protected HashSet<T> closedStates;
+	protected int expandedCounter;
 
 	/**
 	 * Check how many times a node was expanded.
@@ -145,10 +144,9 @@ public abstract class AStar<T> {
 	 * Default c'tor.
 	 */
 	public AStar() {
-		paths = new PriorityQueue<Node>();
-		mindists = new HashMap<T, Double>();
+		fringe = new PriorityQueue<Node>();
+		closedStates = new HashSet<T>();
 		expandedCounter = 0;
-		lastCost = 0.0;
 	}
 
 	/**
@@ -174,43 +172,22 @@ public abstract class AStar<T> {
 	}
 
 	/**
-	 * Expand a path.
+	 * Expand a node.
 	 * 
-	 * @param path
-	 *            The path to expand.
+	 * @param node
+	 *            The node to expand.
 	 */
-	private void expand(Node path) {
-		T p = path.getState();
-		Double min = mindists.get(path.getState());
-
-		/*
-		 * If a better path passing for this point already exists then don't
-		 * expand it.
-		 */
-		if (min == null || min.doubleValue() > path.f.doubleValue())
-			mindists.put(path.getState(), path.f);
-		else
-			return;
-
-		List<T> successors = generateSuccessors(p);
+	protected void expand(Node node) {
+		List<T> successors = generateSuccessors(node);
 
 		for (T t : successors) {
-			Node newPath = new Node(path);
-			newPath.setState(t);
-			f(newPath, path.getState(), t);
-			paths.offer(newPath);
+			Node newNode = new Node(node);
+			newNode.setState(t);
+			f(newNode, node.getState(), t);
+			fringe.offer(newNode);
 		}
 
 		expandedCounter++;
-	}
-
-	/**
-	 * Get the cost to reach the last node in the path.
-	 * 
-	 * @return The cost for the found path.
-	 */
-	public Double getCost() {
-		return lastCost;
 	}
 
 	/**
@@ -232,16 +209,13 @@ public abstract class AStar<T> {
 			expand(root);
 
 			for (;;) {
-				Node p = paths.poll();
+				Node p = fringe.poll();
 
 				if (p == null) {
-					lastCost = Double.MAX_VALUE;
 					return null;
 				}
 
 				T last = p.getState();
-
-				lastCost = p.g;
 
 				if (isGoal(last)) {
 					LinkedList<T> retPath = new LinkedList<T>();
@@ -252,6 +226,7 @@ public abstract class AStar<T> {
 
 					return retPath;
 				}
+				closedStates.add(p.state);
 				expand(p);
 			}
 		} catch (Exception e) {
