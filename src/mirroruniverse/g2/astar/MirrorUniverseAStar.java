@@ -1,5 +1,6 @@
 package mirroruniverse.g2.astar;
 
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -14,16 +15,23 @@ public class MirrorUniverseAStar extends AStar<State> {
 	Map leftMap;
 	Map rightMap;
 	PriorityQueue<Node> hangingNodes;
-	protected PriorityQueue<Node> fringe;
-	protected HashSet<State> closedStates;
-	protected int expandedCounter;
 	protected int hangingNodesExpandedCounter;
 	boolean needExplored;
+
+	public class hangingNodesComparator implements Comparator<Node> {
+
+		@Override
+		public int compare(Node o1, Node o2) {
+			double h1 = o1.f - o1.g;
+			double h2 = o2.f - o2.g;
+			return (int) (h1 - h2);
+		}
+	}
 
 	public MirrorUniverseAStar(Map leftMap, Map rightMap) {
 		this.leftMap = leftMap;
 		this.rightMap = rightMap;
-		hangingNodes = new PriorityQueue<Node>();
+		hangingNodes = new PriorityQueue<Node>(1024, new hangingNodesComparator());
 		fringe = new PriorityQueue<Node>();
 		closedStates = new HashSet<State>();
 		expandedCounter = 0;
@@ -91,19 +99,6 @@ public class MirrorUniverseAStar extends AStar<State> {
 		return p.f;
 	}
 
-	protected void expand(Node node) {
-		List<State> successors = generateSuccessors(node);
-
-		for (State t : successors) {
-			Node newNode = new Node(node);
-			newNode.setState(t);
-			f(newNode, node.getState(), t);
-			fringe.offer(newNode);
-		}
-
-		expandedCounter++;
-	}
-
 	protected List<State> generateSuccessors(Node node) {
 		List<State> successors = new LinkedList<State>();
 
@@ -120,7 +115,7 @@ public class MirrorUniverseAStar extends AStar<State> {
 			// do not expand it, return directly
 			return successors;
 		}
-		
+
 		if (Config.DEBUG)
 			System.out.println("Expand:\n" + node.state);
 
@@ -176,12 +171,13 @@ public class MirrorUniverseAStar extends AStar<State> {
 					// if there are still unknown area during the search
 					if (this.needExplored)
 						return null;
-					
+
 					// search all the hanging nodes
 					if (Config.DEBUG)
 						System.out.println("No perfect path");
-					
-					ImperfectSolutionAStar isa = new ImperfectSolutionAStar(leftMap, rightMap, hangingNodes);
+
+					ImperfectSolutionAStar isa = new ImperfectSolutionAStar(
+							leftMap, rightMap, hangingNodes);
 					List<State> bestSolution = isa.getBestSolution();
 					this.hangingNodesExpandedCounter = isa.expandedCounter;
 					return bestSolution;
