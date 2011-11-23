@@ -28,6 +28,7 @@ public class WallFlower implements Player {
 		leftMap.updateView(aintViewL);
 		rightMap.updateView(aintViewR);
 
+		// if we know the exits and no path found before
 		if (leftMap.exitPos != null && rightMap.exitPos != null && !routeFinder.pathFound())
 			 routeFinder.searchPath();
 
@@ -47,5 +48,4 @@ public class WallFlower implements Player {
 		rightMap.updatePlayer(MUMap.aintDToM[nextMove]);
 		return nextMove;
 	}
-
 }

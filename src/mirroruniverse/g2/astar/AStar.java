@@ -64,6 +64,7 @@ public abstract class AStar<T> {
 		 *         <code>0</code>; <code>0</code> Object are the same.
 		 *         <code>bigger than 0</code> This object is bigger than o.
 		 */
+		@Override
 		public int compareTo(Object o) {
 			Node p = (Node) o;
 			return (int) (f - p.f);
@@ -218,21 +219,25 @@ public abstract class AStar<T> {
 				T last = p.getState();
 
 				if (isGoal(last)) {
-					LinkedList<T> retPath = new LinkedList<T>();
-
-					for (Node i = p; i != null; i = i.parent) {
-						retPath.addFirst(i.getState());
-					}
-
-					return retPath;
+					return constructSolution(p);
 				}
-				closedStates.add(p.state);
 				expand(p);
+				closedStates.add(p.state);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return null;
 
+	}
+	
+	protected List<T> constructSolution (Node last) {
+		LinkedList<T> retPath = new LinkedList<T>();
+
+		for (Node i = last; i != null; i = i.parent) {
+			retPath.addFirst(i.getState());
+		}
+
+		return retPath;
 	}
 }

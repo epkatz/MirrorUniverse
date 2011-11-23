@@ -1,6 +1,5 @@
 package mirroruniverse.g2.astar;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -9,16 +8,16 @@ import java.util.PriorityQueue;
 import mirroruniverse.g2.Config;
 import mirroruniverse.g2.Map;
 import mirroruniverse.g2.Position;
-import mirroruniverse.g2.astar.AStar.Node;
 import mirroruniverse.sim.MUMap;
 
-public class MirrorUniverseAStar {
+public class MirrorUniverseAStar extends AStar<State> {
 	Map leftMap;
 	Map rightMap;
 	PriorityQueue<Node> hangingNodes;
 	protected PriorityQueue<Node> fringe;
 	protected HashSet<State> closedStates;
 	protected int expandedCounter;
+	protected int hangingNodesExpandedCounter;
 	boolean needExplored;
 
 	public MirrorUniverseAStar(Map leftMap, Map rightMap) {
@@ -28,67 +27,8 @@ public class MirrorUniverseAStar {
 		fringe = new PriorityQueue<Node>();
 		closedStates = new HashSet<State>();
 		expandedCounter = 0;
+		hangingNodesExpandedCounter = 0;
 		this.needExplored = true;
-	}
-
-	protected class Node implements Comparable {
-		public State state;
-		public Double f;
-		public Double g;
-		public Node parent;
-
-		/**
-		 * Default c'tor.
-		 */
-		public Node() {
-			parent = null;
-			state = null;
-			g = f = 0.0;
-		}
-
-		/**
-		 * C'tor by copy another object.
-		 * 
-		 * @param p
-		 *            The path object to clone.
-		 */
-		public Node(Node p) {
-			this();
-			parent = p;
-			g = p.g;
-			f = p.f;
-		}
-
-		/**
-		 * Compare to another object using the total cost f.
-		 * 
-		 * @param o
-		 *            The object to compare to.
-		 * @see Comparable#compareTo()
-		 * @return <code>less than 0</code> This object is smaller than
-		 *         <code>0</code>; <code>0</code> Object are the same.
-		 *         <code>bigger than 0</code> This object is bigger than o.
-		 */
-		public int compareTo(Object o) {
-			Node p = (Node) o;
-			return (int) (f - p.f);
-		}
-
-		/**
-		 * Get the last point on the path.
-		 * 
-		 * @return The last point visited by the path.
-		 */
-		public State getState() {
-			return state;
-		}
-
-		/**
-		 * Set the
-		 */
-		public void setState(State p) {
-			state = p;
-		}
 	}
 
 	public boolean isGoal(State node) {
@@ -193,6 +133,7 @@ public class MirrorUniverseAStar {
 
 			Position newPosLeft;
 			newPosLeft = new Position(posLeft.y + deltaY, posLeft.x + deltaX);
+			// if there is a position that is unknown on the left map
 			if (leftMap.isUnknown(newPosLeft))
 				this.needExplored = true;
 			if (!leftMap.isValid(newPosLeft)) {
@@ -203,6 +144,7 @@ public class MirrorUniverseAStar {
 
 			Position newPosRight;
 			newPosRight = new Position(posRight.y + deltaY, posRight.x + deltaX);
+			// if there is a position that is unknown on the right map
 			if (rightMap.isUnknown(newPosRight))
 				this.needExplored = true;
 			if (!rightMap.isValid(newPosRight)) {
@@ -231,11 +173,18 @@ public class MirrorUniverseAStar {
 				Node p = fringe.poll();
 
 				if (p == null) {
-					// TODO
+					// if there are still unknown area during the search
+					if (this.needExplored)
+						return null;
+					
 					// search all the hanging nodes
 					if (Config.DEBUG)
 						System.out.println("No perfect path");
-					return null;
+					
+					ImperfectSolutionAStar isa = new ImperfectSolutionAStar(leftMap, rightMap, hangingNodes);
+					List<State> bestSolution = isa.getBestSolution();
+					this.hangingNodesExpandedCounter = isa.expandedCounter;
+					return bestSolution;
 				}
 
 				State last = p.getState();
@@ -244,6 +193,7 @@ public class MirrorUniverseAStar {
 					LinkedList<State> retPath = new LinkedList<State>();
 					for (Node i = p; i != null; i = i.parent)
 						retPath.addFirst(i.getState());
+					closedStates.clear();
 					return retPath;
 				}
 
