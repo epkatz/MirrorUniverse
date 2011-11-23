@@ -5,6 +5,6 @@ public class Config {
 	
 	
 	//MUST CHANGE THIS TO HIGH NUMBER
-	public static final int GUARANTEED_SIZE = 21;
+	public static final int GUARANTEED_SIZE = 50;
 	public static final int MAX_SIZE = GUARANTEED_SIZE * 2 + 1;
 }
