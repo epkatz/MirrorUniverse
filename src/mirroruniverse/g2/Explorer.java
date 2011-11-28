@@ -12,6 +12,7 @@ public class Explorer {
 	LinkedList<Position> rightOpenList = new LinkedList<Position>();
 	public int r = -1;
 	public boolean allExplored = false;
+	LinkedList<Integer> backtrack = new LinkedList<Integer>();
 	
 	//New Strategy
 	//Enumerate every possible move
@@ -62,15 +63,30 @@ public class Explorer {
 		if (bestCount != 0) {
 			//System.out.println("the count is " + bestCount);
 			//System.out.println("best count: " + d);
+			//backtrack.addFirst(d);
 			return d;
 		} else {
-			d = findnextUnopen();
+//			if (!backtrack.isEmpty()) {
+//				int back = oppositeDirection(backtrack.removeLast());
+//				if (back != -1 || back != 0) {
+//					return back;
+//				}
+//			}
+			//d = findnextUnopen();
 			Random rdmTemp = new Random();
-			//System.out.println("Unopen: " + d);
-			int nextX = rdmTemp.nextInt(3);
-			int nextY = rdmTemp.nextInt(3);
-
-			d = MUMap.aintMToD[nextX][nextY];
+			int nextX;
+			int nextY;
+			do {
+				//System.out.println("Unopen: " + d);
+				nextX = rdmTemp.nextInt(3);
+				nextY = rdmTemp.nextInt(3);
+				d = MUMap.aintMToD[nextX][nextY];
+			} while (d == 0 /*&& 
+					leftMap.map[leftMap.playerPos.y+nextY][leftMap.playerPos.x+nextX] != 
+						Map.Tile.EXIT.getValue() &&
+						rightMap.map[rightMap.playerPos.y+nextY][rightMap.playerPos.x+nextX] != 
+							Map.Tile.EXIT.getValue()*/
+					);
 			return d;
 		}
 	}
@@ -95,6 +111,21 @@ public class Explorer {
 			}
 		}
 		return ret;
+	}
+	
+	public int oppositeDirection(int n) {
+		switch(n) {
+			case 0: return 0; 
+			case 1: return 5; 
+			case 2: return 6; 
+			case 3: return 7; 
+			case 4: return 8; 
+			case 5: return 1; 
+			case 6: return 2; 
+			case 7: return 3; 
+			case 8: return 4; 
+		}
+		return -1;
 	}
 	
 	
