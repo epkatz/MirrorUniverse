@@ -60,21 +60,26 @@ public class Explorer {
 			}
 		}
 		if (bestCount != 0) {
-			System.out.println("the count is " + bestCount);
-			System.out.println("best count: " + d);
+			//System.out.println("the count is " + bestCount);
+			//System.out.println("best count: " + d);
 			return d;
 		} else {
 			d = findnextUnopen();
-			System.out.println("Unopen: " + d);
-			return findnextUnopen();
+			Random rdmTemp = new Random();
+			//System.out.println("Unopen: " + d);
+			int nextX = rdmTemp.nextInt(3);
+			int nextY = rdmTemp.nextInt(3);
+
+			d = MUMap.aintMToD[nextX][nextY];
+			return d;
 		}
 	}
 	
 	public int countNewSpacesOpened(int[] diff, Map myMap, Position pos) {
-		System.out.println("******" + myMap.name + "******");
+		//System.out.println("******" + myMap.name + "******");
 		int ret = 0;
 		Position newPos = pos.newPosFromOffset(diff[1], diff[0]);
-		System.out.println("new position: " + newPos.y + "," + newPos.x + " is " + myMap.map[newPos.y][newPos.x]);
+		//System.out.println("new position: " + newPos.y + "," + newPos.x + " is " + myMap.map[newPos.y][newPos.x]);
 		//Account for bad moves
 		if (myMap.map[newPos.y][newPos.x] == Map.Tile.EMPTY.getValue()) {
 			for (int i = -((r / 2) + 1); i <= (r / 2) + 1; i++) {
