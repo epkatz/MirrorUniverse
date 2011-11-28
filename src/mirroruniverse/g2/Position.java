@@ -27,4 +27,8 @@ public class Position {
 		final Position rhs = (Position) obj;
 		return x == rhs.x && y == rhs.y;
 	}
+	
+	public Position newPosFromOffset(int dy, int dx) {
+		return new Position(y + dy, x + dx);
+	}
 }

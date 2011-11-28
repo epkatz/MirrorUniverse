@@ -7,6 +7,7 @@ public class Map {
 	public String name;
 	public Position playerPos;
 	public Position exitPos;
+	//y,x
 	public int[][] map;
 
 	public enum Tile {
@@ -15,6 +16,9 @@ public class Map {
 
 		private Tile(int value) {
 			this.value = value;
+		}
+		public int getValue() {
+			return value;
 		}
 	};
 
@@ -93,10 +97,10 @@ public class Map {
 				}
 			}
 		}
-		if (Config.DEBUG) {
-			//System.out.println(name + " has view\n" + whatIsee(view));
-			//System.out.println(name + " has map\n" + printMap());
-		}
+		//if (Config.DEBUG) {
+			System.out.println(name + " has view\n" + whatIsee(view));
+			System.out.println(name + " has map\n" + printMap());
+		//}
 
 	}
 
