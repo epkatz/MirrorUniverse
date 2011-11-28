@@ -53,15 +53,19 @@ public class Explorer {
 			int leftCount = countNewSpacesOpened(diff, leftMap, leftMap.playerPos);
 			//right
 			int rightCount = countNewSpacesOpened(diff, rightMap, rightMap.playerPos);
-			System.out.println("best count " + (leftCount + rightCount));
+			//System.out.println("best count " + (leftCount + rightCount));
 			if (leftCount + rightCount > bestCount) {
 				bestCount = leftCount + rightCount;
 				d = i;
 			}
 		}
 		if (bestCount != 0) {
+			System.out.println("the count is " + bestCount);
+			System.out.println("best count: " + d);
 			return d;
 		} else {
+			d = findnextUnopen();
+			System.out.println("Unopen: " + d);
 			return findnextUnopen();
 		}
 	}
@@ -69,19 +73,17 @@ public class Explorer {
 	public int countNewSpacesOpened(int[] diff, Map myMap, Position pos) {
 		System.out.println("******" + myMap.name + "******");
 		int ret = 0;
-		Position newPos = pos.newPosFromOffset(diff[0], diff[1]);
+		Position newPos = pos.newPosFromOffset(diff[1], diff[0]);
+		System.out.println("new position: " + newPos.y + "," + newPos.x + " is " + myMap.map[newPos.y][newPos.x]);
 		//Account for bad moves
-		if (myMap.map[newPos.y][newPos.x] == Map.Tile.UNKNOWN.getValue() || 
-				myMap.map[newPos.y][newPos.x] == Map.Tile.EMPTY.getValue()) {
+		if (myMap.map[newPos.y][newPos.x] == Map.Tile.EMPTY.getValue()) {
 			for (int i = -((r / 2) + 1); i <= (r / 2) + 1; i++) {
-				for (int j = ((r / 2) + 1); j <= (r / 2) + 1; j++) {
-					System.out.println("countNewSpacesOpened: " + myMap.map[myMap.playerPos.y + i][myMap.playerPos.x + j]);
-					System.out.println("y: " + (myMap.playerPos.y + i));
-					System.out.println("x: " + (myMap.playerPos.x + j));
-					if (myMap.map[myMap.playerPos.y + i][myMap.playerPos.x + j] == 
+				for (int j = -((r / 2) + 1); j <= (r / 2) + 1; j++) {
+					//System.out.println("countNewSpacesOpened: " + myMap.map[newPos.y + i][newPos.x + j]);
+					//System.out.println("y: " + (newPos.y + i));
+					//System.out.println("x: " + (newPos.x + j));
+					if (myMap.map[newPos.y + i][newPos.x + j] == 
 							Map.Tile.UNKNOWN.getValue()) {
-						System.out.println("Eureka");
-						System.exit(0);
 						ret++;
 					}
 				}

@@ -99,7 +99,7 @@ public class Map {
 		}
 		//if (Config.DEBUG) {
 			System.out.println(name + " has view\n" + whatIsee(view));
-			System.out.println(name + " has map\n" + printMap());
+		//	System.out.println(name + " has map\n" + printMap());
 		//}
 
 	}
