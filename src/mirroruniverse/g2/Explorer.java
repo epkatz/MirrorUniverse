@@ -1,5 +1,6 @@
 package mirroruniverse.g2;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Random;
 
@@ -12,7 +13,8 @@ public class Explorer {
 	LinkedList<Position> rightOpenList = new LinkedList<Position>();
 	public int r = -1;
 	public boolean allExplored = false;
-	LinkedList<Integer> backtrack = new LinkedList<Integer>();
+	Backtracker backtrack;
+	public boolean backtracking = false;
 	
 	//New Strategy
 	//Enumerate every possible move
@@ -31,6 +33,8 @@ public class Explorer {
 			r = aintViewL.length / 2;
 			System.out.println("*********r is " + r);
 		}
+		addToFrontier(leftOpenList, aintViewL, leftMap);
+		addToFrontier(rightOpenList, aintViewR, rightMap);
 //		Random rdmTemp = new Random();
 //		int nextX = rdmTemp.nextInt(3);
 //		int nextY = rdmTemp.nextInt(3);
@@ -45,52 +49,72 @@ public class Explorer {
 		return d;
 	}
 	
+	public void addToFrontier(LinkedList<Position> openList, int[][] view, Map myMap) {
+		Iterator<Position> itr = openList.iterator();
+		while (itr.hasNext()) {
+			Position p = itr.next();
+			if (myMap.map[p.y][p.x] != Map.Tile.UNKNOWN.getValue()) {
+				itr.remove();
+			}
+		}
+		for (int i = 0; i < view.length; i++) {
+			for (int j = 0; j < view.length; j++) {
+				if (myMap.map[myMap.playerPos.y + i][myMap.playerPos.x + i] == 
+													Map.Tile.EMPTY.getValue()) {
+					for (int k = 1; k <= 8; k++) {
+						int[] diff = MUMap.aintDToM[k];
+						if (myMap.map[myMap.playerPos.y + i + diff[1]][myMap.playerPos.x + j + diff[0]] == 
+													Map.Tile.UNKNOWN.getValue()) {
+							
+							openList.add(myMap.playerPos.newPosFromOffset(i + diff[1], j + diff[0]));														
+						}
+					}
+				}
+			}
+		}		
+	}
+
 	public int nextBestSearch() {
 		int d = 0;
 		int bestCount = 0;
-		for (int i = 0; i <= 8; i++) {
-			int[] diff = MUMap.aintDToM[i];
-			//left
-			int leftCount = countNewSpacesOpened(diff, leftMap, leftMap.playerPos);
-			//right
-			int rightCount = countNewSpacesOpened(diff, rightMap, rightMap.playerPos);
-			//System.out.println("best count " + (leftCount + rightCount));
-			if (leftCount + rightCount > bestCount) {
-				bestCount = leftCount + rightCount;
-				d = i;
+		if (!backtracking) {
+			for (int i = 0; i <= 8; i++) {
+				int[] diff = MUMap.aintDToM[i];
+				//left
+				int leftCount = countNewSpacesOpened(diff, leftMap, leftMap.playerPos);
+				//right
+				int rightCount = countNewSpacesOpened(diff, rightMap, rightMap.playerPos);
+				//System.out.println("best count " + (leftCount + rightCount));
+				if (leftCount + rightCount > bestCount) {
+					bestCount = leftCount + rightCount;
+					d = i;
+				}
+			}
+			if (bestCount != 0) {
+				//System.out.println("the count is " + bestCount);
+				//System.out.println("best count: " + d);
+				//backtrack.addFirst(d);
+				return d;
+			} else {
+				backtracking = true;
+				generateBackTrack();
 			}
 		}
-		if (bestCount != 0) {
-			//System.out.println("the count is " + bestCount);
-			//System.out.println("best count: " + d);
-			//backtrack.addFirst(d);
-			return d;
-		} else {
-//			if (!backtrack.isEmpty()) {
-//				int back = oppositeDirection(backtrack.removeLast());
-//				if (back != -1 || back != 0) {
-//					return back;
-//				}
-//			}
-			//d = findnextUnopen();
-			Random rdmTemp = new Random();
-			int nextX;
-			int nextY;
-			do {
-				//System.out.println("Unopen: " + d);
-				nextX = rdmTemp.nextInt(3);
-				nextY = rdmTemp.nextInt(3);
-				d = MUMap.aintMToD[nextX][nextY];
-			} while (d == 0 /*&& 
-					leftMap.map[leftMap.playerPos.y+nextY][leftMap.playerPos.x+nextX] != 
-						Map.Tile.EXIT.getValue() &&
-						rightMap.map[rightMap.playerPos.y+nextY][rightMap.playerPos.x+nextX] != 
-							Map.Tile.EXIT.getValue()*/
-					);
-			return d;
+		d = backtrack.getMove();
+		if (!backtrack.pathFound()) {
+			backtracking = false;
 		}
+		return d;
 	}
 	
+	public void generateBackTrack() {
+		Position leftPos = leftOpenList.pop();
+		Position rightPos = rightOpenList.pop();
+		System.out.println("Left Pos: " + leftPos);
+		System.out.println("Right Pos: " + rightPos);
+		backtrack = new Backtracker(leftMap, rightMap, leftPos, rightPos);
+	}
+
 	public int countNewSpacesOpened(int[] diff, Map myMap, Position pos) {
 		//System.out.println("******" + myMap.name + "******");
 		int ret = 0;
