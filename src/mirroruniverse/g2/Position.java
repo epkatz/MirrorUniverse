@@ -31,4 +31,8 @@ public class Position {
 	public Position newPosFromOffset(int dy, int dx) {
 		return new Position(y + dy, x + dx);
 	}
+	
+	public String toString() {
+		return "(y,x) (" + y + "," + x + ")";
+	}
 }

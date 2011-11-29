@@ -72,37 +72,33 @@ public class Explorer {
 //					return back;
 //				}
 //			}
-			//d = findnextUnopen();
-			Random rdmTemp = new Random();
-			int nextX;
-			int nextY;
-			do {
-				//System.out.println("Unopen: " + d);
-				nextX = rdmTemp.nextInt(3);
-				nextY = rdmTemp.nextInt(3);
-				d = MUMap.aintMToD[nextX][nextY];
-			} while (d == 0 /*&& 
+			d = findnextUnopen();
+//			Random rdmTemp = new Random();
+//			int nextX;
+//			int nextY;
+//			//do {
+//				//System.out.println("Unopen: " + d);
+//				nextX = rdmTemp.nextInt(3);
+//				nextY = rdmTemp.nextInt(3);
+//				d = MUMap.aintMToD[nextX][nextY];
+			/*} while (d == 0 && 
 					leftMap.map[leftMap.playerPos.y+nextY][leftMap.playerPos.x+nextX] != 
 						Map.Tile.EXIT.getValue() &&
 						rightMap.map[rightMap.playerPos.y+nextY][rightMap.playerPos.x+nextX] != 
-							Map.Tile.EXIT.getValue()*/
-					);
+							Map.Tile.EXIT.getValue()
+					);*/
+			System.out.println("returning: " + d);
 			return d;
 		}
 	}
 	
 	public int countNewSpacesOpened(int[] diff, Map myMap, Position pos) {
-		//System.out.println("******" + myMap.name + "******");
 		int ret = 0;
 		Position newPos = pos.newPosFromOffset(diff[1], diff[0]);
-		//System.out.println("new position: " + newPos.y + "," + newPos.x + " is " + myMap.map[newPos.y][newPos.x]);
 		//Account for bad moves
 		if (myMap.map[newPos.y][newPos.x] == Map.Tile.EMPTY.getValue()) {
 			for (int i = -((r / 2) + 1); i <= (r / 2) + 1; i++) {
 				for (int j = -((r / 2) + 1); j <= (r / 2) + 1; j++) {
-					//System.out.println("countNewSpacesOpened: " + myMap.map[newPos.y + i][newPos.x + j]);
-					//System.out.println("y: " + (newPos.y + i));
-					//System.out.println("x: " + (newPos.x + j));
 					if (myMap.map[newPos.y + i][newPos.x + j] == 
 							Map.Tile.UNKNOWN.getValue()) {
 						ret++;
@@ -133,8 +129,13 @@ public class Explorer {
 	public int findnextUnopen() {
 		Position leftPos = countTillUnopen(leftMap, leftMap.playerPos);
 		Position rightPos = countTillUnopen(rightMap, rightMap.playerPos);
+		System.out.println("leftPos" + leftPos);
+		System.out.println("rightPos" + rightPos);
+		System.out.println("Current leftPlayer " + leftMap.playerPos);
+		System.out.println("Current rightPlayer " + rightMap.playerPos);
 		if (leftPos == null && rightPos == null) {
 			allExplored = true;
+			return -1;
 		} else if (leftPos == null) {
 			return getDirection(rightPos, rightMap.playerPos);
 		} else if (rightPos == null) {
@@ -149,7 +150,6 @@ public class Explorer {
 								return getDirection(leftPos, leftMap.playerPos);
 							}
 		}
-		return 0;
 	}
 	
 	public int getDirection(Position newPos, Position oldPos) {
@@ -183,22 +183,33 @@ public class Explorer {
 		LinkedList<Position> toCheck = new LinkedList<Position>();
 		LinkedList<Position> checked = new LinkedList<Position>();
 		toCheck.add(pos);
-		int count = 0;
-		while (!toCheck.isEmpty() && count < Config.MAX_SIZE * 800) {
-			count++;
-			for (int i = 0; i <= 8; i++) {
+		while (!toCheck.isEmpty()) {
+			System.out.println("Checking countTillUnopen");
+			for (int i = 1; i <= 8; i++) {
 				int[] diff = MUMap.aintDToM[i];
-				Position newPos = pos.newPosFromOffset(diff[0], diff[1]);
+				Position newPos = pos.newPosFromOffset(diff[1], diff[0]);
 				if (myMap.map[newPos.y][newPos.x] == Map.Tile.EMPTY.getValue()) {
+					if (toCheck.contains(newPos)) {
+						System.out.println("What up foo");
+					}
+					if (checked.contains(newPos)) {
+						System.out.println("what up bar");
+					}
 					if (!toCheck.contains(newPos) && !checked.contains(newPos)) {
-						toCheck.addLast(newPos);	
+						System.out.println("Adding to toCheck: " + newPos);
+						toCheck.addFirst(newPos);	
+					} else {
+						System.out.println(newPos + " is already in the list");
 					}
 				}
 			}
-			Position thisLoopPos = toCheck.removeFirst();
+			Position thisLoopPos = toCheck.removeLast();
+			System.out.println("Removing from toCheck: " + thisLoopPos);
 			if (hasUnexploredNeighbor(thisLoopPos, myMap)) {
+				System.out.println("hasUnexploredNeighbor at " + thisLoopPos);
 				return thisLoopPos;
 			}
+			System.out.println("Adding to checked: " + thisLoopPos);
 			checked.add(thisLoopPos);
 		}
 		System.out.println("Return null");
@@ -206,12 +217,14 @@ public class Explorer {
 	}
 	
 	public boolean hasUnexploredNeighbor(Position pos, Map myMap) {
+		System.out.println("Checking for hasUnexploredNeighbor " + pos);
 		for (int i = 0; i <= 8; i++) {
 			int[] diff = MUMap.aintDToM[i];
-			Position newPos = pos.newPosFromOffset(diff[0], diff[1]);
-			if (myMap.map[newPos.y][newPos.x] == Map.Tile.UNKNOWN.getValue())
+			Position newPos = pos.newPosFromOffset(diff[1], diff[0]);
+			if (myMap.map[newPos.y][newPos.x] == Map.Tile.UNKNOWN.getValue()) {
 				System.out.println(myMap.map[newPos.y][newPos.x] + " equal unknown?");
 				return true;
+			}
 		}
 		System.out.println("false");
 		return false;
