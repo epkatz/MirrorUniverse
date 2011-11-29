@@ -1,67 +1,49 @@
 package mirroruniverse.g2.astar;
 
-import java.util.Comparator;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.PriorityQueue;
 
 import mirroruniverse.g2.Config;
 import mirroruniverse.g2.Map;
 import mirroruniverse.g2.Position;
+import mirroruniverse.g2.astar.AStar.Node;
 import mirroruniverse.sim.MUMap;
 
-public class MirrorUniverseAStar extends AStar<State> {
-	Map leftMap;
-	Map rightMap;
-	PriorityQueue<Node> hangingNodes;
-	protected int hangingNodesExpandedCounter;
-	boolean needExplored;
+public class BacktrackingAStar extends AStar<State> {
 
-	public class hangingNodesComparator implements Comparator<Node> {
-		@Override
-		public int compare(Node o1, Node o2) {
-			double h1 = o1.f - o1.g;
-			double h2 = o2.f - o2.g;
-			return (int) (h1 - h2);
-		}
-	}
+	private State goalState;
+	private Node bestNode;
+	private double steps;
+	private double bestH;
+	private Map leftMap;
+	private Map rightMap;
 
-	public MirrorUniverseAStar(Map leftMap, Map rightMap) {
+	public BacktrackingAStar(Map leftMap, Map rightMap, Position leftTarget,
+			Position rightTarget) {
 		this.leftMap = leftMap;
 		this.rightMap = rightMap;
-		hangingNodes = new PriorityQueue<Node>(1024, new hangingNodesComparator());
-		fringe = new PriorityQueue<Node>();
-		closedStates = new HashSet<State>();
-		expandedCounter = 0;
-		hangingNodesExpandedCounter = 0;
-		this.needExplored = true;
+		goalState = new State(leftTarget, rightTarget);
+
+		// in case that we can't get to the target position at the same time
+		// find the one with minimal h value (estimated distance to target position)
+		// with minimal steps needed
+		bestNode = null;
+		steps = Double.MAX_VALUE;
+		bestH = Double.MAX_VALUE;
 	}
 
-	public boolean isGoal(State node) {
-		// if we haven't found the exits yet
-		if (leftMap.exitPos == null || rightMap.exitPos == null)
-			return false;
-
-		// now we know the position of the exits
-		Position posLeft = node.posLeft;
-		Position posRight = node.posRight;
-		Position exitLeft = leftMap.exitPos;
-		Position exitRight = rightMap.exitPos;
-
-		// if they are the same, both left and right
-		if (posLeft.x == exitLeft.x && posLeft.y == exitLeft.y
-				&& posRight.x == exitRight.x && posRight.y == exitRight.y)
-			return true;
-		return false;
+	@Override
+	protected boolean isGoal(State state) {
+		return goalState.equals(state);
 	}
 
+	@Override
 	protected Double g(State from, State to) {
 		return 1.0;
 	}
 
+	@Override
 	protected Double h(State from, State to) {
-
 		double x1, x2, y1, y2, deltaX, deltaY, diagonal;
 
 		x1 = from.posLeft.x;
@@ -87,6 +69,7 @@ public class MirrorUniverseAStar extends AStar<State> {
 		return Math.max(distanceLeft, distanceRight);
 	}
 
+	@Override
 	protected List<State> generateSuccessors(Node node) {
 		List<State> successors = new LinkedList<State>();
 
@@ -98,8 +81,12 @@ public class MirrorUniverseAStar extends AStar<State> {
 
 		// if one of the players has reached the exit
 		if (leftMap.isExit(posLeft) || rightMap.isExit(posRight)) {
-			// put it in hanging state
-			hangingNodes.add(node);
+			double h = node.f - node.g;
+			if (h <= this.bestH) {
+				this.bestH = h;
+				if (node.f < this.steps)
+					this.bestNode = node;
+			}
 			// do not expand it, return directly
 			return successors;
 		}
@@ -116,9 +103,6 @@ public class MirrorUniverseAStar extends AStar<State> {
 
 			Position newPosLeft;
 			newPosLeft = new Position(posLeft.y + deltaY, posLeft.x + deltaX);
-			// if there is a position that is unknown on the left map
-			if (leftMap.isUnknown(newPosLeft))
-				this.needExplored = true;
 			if (!leftMap.isValid(newPosLeft)) {
 				// if it's not valid, roll back
 				newPosLeft.x -= deltaX;
@@ -127,9 +111,6 @@ public class MirrorUniverseAStar extends AStar<State> {
 
 			Position newPosRight;
 			newPosRight = new Position(posRight.y + deltaY, posRight.x + deltaX);
-			// if there is a position that is unknown on the right map
-			if (rightMap.isUnknown(newPosRight))
-				this.needExplored = true;
 			if (!rightMap.isValid(newPosRight)) {
 				// if it's not valid, roll back
 				newPosRight.x -= deltaX;
@@ -144,9 +125,9 @@ public class MirrorUniverseAStar extends AStar<State> {
 		return successors;
 	}
 
+	@Override
 	public List<State> compute(State start) {
 		try {
-			this.needExplored = false;
 			Node root = new Node();
 			root.setState(start);
 
@@ -156,19 +137,11 @@ public class MirrorUniverseAStar extends AStar<State> {
 				Node p = fringe.poll();
 
 				if (p == null) {
-					// if there are still unknown area during the search
-					if (this.needExplored)
-						return null;
-
-					// search all the hanging nodes
 					if (Config.DEBUG)
 						System.out.println("No perfect path");
-
-					ImperfectSolutionAStar isa = new ImperfectSolutionAStar(
-							leftMap, rightMap, hangingNodes);
-					List<State> bestSolution = isa.getBestSolution();
-					this.hangingNodesExpandedCounter = isa.expandedCounter;
-					return bestSolution;
+					if (this.bestNode != null)
+						return this.constructSolution(bestNode);
+					break;
 				}
 
 				State last = p.getState();
