@@ -41,7 +41,7 @@ public class WallFlower implements Player {
 		} else {
 			if (Config.DEBUG)
 				System.out.println("Explore");
-			nextMove = explorer.getMove();
+			nextMove = explorer.getMove(aintViewL, aintViewR);
 		}
 		
 		leftMap.updatePlayer(MUMap.aintDToM[nextMove]);

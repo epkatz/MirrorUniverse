@@ -7,7 +7,6 @@ import java.util.PriorityQueue;
 import mirroruniverse.g2.Config;
 import mirroruniverse.g2.Map;
 import mirroruniverse.g2.Position;
-import mirroruniverse.g2.astar.AStar.Node;
 import mirroruniverse.sim.MUMap;
 
 public class ImperfectSolutionAStar extends MirrorUniverseAStar {

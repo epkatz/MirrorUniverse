@@ -41,7 +41,7 @@ public class RouteFinder {
 		return computeMove(from, to);
 	}
 
-	public int computeMove(State from, State to) {
+	public static int computeMove(State from, State to) {
 		double x1, x2, y1, y2, deltaX, deltaY, diagonal;
 		x1 = from.posLeft.x;
 		y1 = from.posLeft.y;

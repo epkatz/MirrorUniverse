@@ -16,6 +16,9 @@ public class Map {
 		private Tile(int value) {
 			this.value = value;
 		}
+		public int getValue() {
+			return value;
+		}
 	};
 
 	public boolean isExit(Position pos) {
