@@ -27,9 +27,7 @@ public class Backtracker {
 	public int getMove() {
 		if (path.size() == 0) {
 			System.out.println("Why?!");
-			return -1;
 		}
-		
 		State from = new State(leftMap.playerPos, rightMap.playerPos);
 		State to = path.remove(0);
 		return RouteFinder.computeMove(from, to);
