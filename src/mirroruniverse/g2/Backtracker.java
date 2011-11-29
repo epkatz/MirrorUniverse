@@ -16,7 +16,8 @@ public class Backtracker {
 		this.rightMap = rightMap;
 		this.Astar = new BacktrackingAStar(leftMap, rightMap, leftTarget, rightTarget);
 		path = this.Astar.compute(new State(leftMap.playerPos, rightMap.playerPos));
-		path.remove(0);
+		if (path != null)
+			path.remove(0);
 	}
 	
 	public boolean pathFound() {
