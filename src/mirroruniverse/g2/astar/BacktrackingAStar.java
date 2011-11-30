@@ -103,6 +103,8 @@ public class BacktrackingAStar extends AStar<State> {
 
 			Position newPosLeft;
 			newPosLeft = new Position(posLeft.y + deltaY, posLeft.x + deltaX);
+			if (leftMap.isExit(newPosLeft))
+				continue;
 			if (!leftMap.isValid(newPosLeft)) {
 				// if it's not valid, roll back
 				newPosLeft.x -= deltaX;
@@ -111,6 +113,8 @@ public class BacktrackingAStar extends AStar<State> {
 
 			Position newPosRight;
 			newPosRight = new Position(posRight.y + deltaY, posRight.x + deltaX);
+			if (rightMap.isExit(newPosRight))
+				continue;
 			if (!rightMap.isValid(newPosRight)) {
 				// if it's not valid, roll back
 				newPosRight.x -= deltaX;
