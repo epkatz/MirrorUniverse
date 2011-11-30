@@ -43,13 +43,13 @@ public class BacktrackingAStar extends AStar<State> {
 	}
 
 	@Override
-	protected Double h(State from, State to) {
+	protected Double h(State from) {
 		double x1, x2, y1, y2, deltaX, deltaY, diagonal;
 
 		x1 = from.posLeft.x;
 		y1 = from.posLeft.y;
-		x2 = to.posLeft.x;
-		y2 = to.posLeft.y;
+		x2 = goalState.posLeft.x;
+		y2 = goalState.posLeft.y;
 		deltaX = Math.abs(x1 - x2);
 		deltaY = Math.abs(y1 - y2);
 		diagonal = Math.max(deltaX, deltaY);
@@ -58,8 +58,8 @@ public class BacktrackingAStar extends AStar<State> {
 
 		x1 = from.posRight.x;
 		y1 = from.posRight.y;
-		x2 = to.posRight.x;
-		y2 = to.posRight.y;
+		x2 = goalState.posRight.x;
+		y2 = goalState.posRight.y;
 		deltaX = Math.abs(x1 - x2);
 		deltaY = Math.abs(y1 - y2);
 		diagonal = Math.max(deltaX, deltaY);

@@ -60,14 +60,14 @@ public class MirrorUniverseAStar extends AStar<State> {
 		return 1.0;
 	}
 
-	protected Double h(State from, State to) {
+	protected Double h(State from) {
 
 		double x1, x2, y1, y2, deltaX, deltaY, diagonal;
 
 		x1 = from.posLeft.x;
 		y1 = from.posLeft.y;
-		x2 = to.posLeft.x;
-		y2 = to.posLeft.y;
+		x2 = leftMap.exitPos.x;
+		y2 = leftMap.exitPos.y;
 		deltaX = Math.abs(x1 - x2);
 		deltaY = Math.abs(y1 - y2);
 		diagonal = Math.max(deltaX, deltaY);
@@ -76,8 +76,8 @@ public class MirrorUniverseAStar extends AStar<State> {
 
 		x1 = from.posRight.x;
 		y1 = from.posRight.y;
-		x2 = to.posRight.x;
-		y2 = to.posRight.y;
+		x2 = rightMap.exitPos.x;
+		y2 = rightMap.exitPos.y;
 		deltaX = Math.abs(x1 - x2);
 		deltaY = Math.abs(y1 - y2);
 		diagonal = Math.max(deltaX, deltaY);
