@@ -15,8 +15,10 @@ public class WallFlower implements Player {
 	private RouteFinder routeFinder;
 	Map rightMap;
 	Map leftMap;
+	int turn;
 
 	public WallFlower() {
+		turn = 0;
 		rightMap = new Map("Right");
 		leftMap = new Map("Left");
 		this.explorer = new Explorer(this.leftMap, this.rightMap);
@@ -25,6 +27,11 @@ public class WallFlower implements Player {
 
 	@Override
 	public int lookAndMove(int[][] aintViewL, int[][] aintViewR) {
+		turn++;
+		System.out.println("Turn: " + turn);
+		/*if (turn > 5000) {
+			System.exit(0);
+		}*/
 		leftMap.updateView(aintViewL);
 		rightMap.updateView(aintViewR);
 
@@ -41,7 +48,11 @@ public class WallFlower implements Player {
 		} else {
 			if (Config.DEBUG)
 				System.out.println("Explore");
-			nextMove = explorer.getMove(aintViewL, aintViewR);
+			if (turn > 3000) {
+				nextMove = explorer.randomness();
+			} else {
+				nextMove = explorer.getMove(aintViewL, aintViewR);
+			}
 		}
 		
 		leftMap.updatePlayer(MUMap.aintDToM[nextMove]);

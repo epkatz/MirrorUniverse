@@ -1,11 +1,11 @@
 
 package mirroruniverse.g2;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Random;
 
-import mirroruniverse.g2.Map.Tile;
 import mirroruniverse.sim.MUMap;
 
 public class Explorer {
@@ -26,49 +26,44 @@ public class Explorer {
 		if (r == -1) {
 			r = aintViewL.length / 2;
 		}
-		addToFrontier(leftOpenList, aintViewL, leftMap);
-		addToFrontier(rightOpenList, aintViewR, rightMap);
 		int d = nextBestSearch();
-		System.out.println(d);
+		//System.out.println(d);
 		return d;
-	}
-
-	public void addToFrontier(LinkedList<Position> openList, int[][] view, Map myMap) {
-		for (int i = 0; i < view.length; i++) {
-			for (int j = 0; j < view.length; j++) {
-				if (myMap.map[myMap.playerPos.y + i][myMap.playerPos.x + i] == Map.Tile.EMPTY.getValue()) {
-					for (int k = 1; k <= 8; k++) {
-						int[] diff = MUMap.aintDToM[k];
-						if (myMap.map[myMap.playerPos.y + i + diff[1]][myMap.playerPos.x + j + diff[0]] == Map.Tile.UNKNOWN.getValue()) {
-							openList.push(myMap.playerPos.newPosFromOffset(i + diff[1], j + diff[0]));
-						}
-					}
-				}
-			}
-		}
 	}
 
 	public int nextBestSearch() {
 		int d = -1;
 		int bestCount = 0;
+		int leftCount = 0;
+		int rightCount = 0;
 		for (int i = 0; i <= 8; i++) {
 			int[] diff = MUMap.aintDToM[i];
-			int leftCount = countNewSpacesOpened(diff, leftMap, leftMap.playerPos);
-			int rightCount = countNewSpacesOpened(diff, rightMap, rightMap.playerPos);
+			leftCount = countNewSpacesOpened(diff, leftMap, leftMap.playerPos);
+			rightCount = countNewSpacesOpened(diff, rightMap, rightMap.playerPos);
 			if (leftCount + rightCount > bestCount) {
 				bestCount = leftCount + rightCount;
 				d = i;
 			}
 		}
 		if (bestCount != 0) {
-			System.out.println("Best Count");
+			int[] diff = MUMap.aintDToM[d];
+			if (leftCount > 1) {
+				leftOpenList.push(new Position(leftMap.playerPos.y+diff[1], leftMap.playerPos.x+diff[0]));
+			}
+			if (rightCount > 1) {
+				rightOpenList.push(new Position(rightMap.playerPos.y+diff[1], rightMap.playerPos.x+diff[0]));
+			}
 			return d;
 		}
 		while (backtrack == null || !backtrack.pathFound()) {
+			System.out.println("Before generateBackTrack");
 			generateBackTrack();
+			System.out.println("After generateBackTrack");
 		}
+		System.out.println("Before getMove");
 		d = backtrack.getMove();
-		System.out.println("backtrack generated moves");
+		System.out.println("After getMove");
+		//System.out.println("backtrack generated moves");
 		return d;
 	}
 	
@@ -85,44 +80,9 @@ public class Explorer {
 		return null;
 	}
 	
-	public int bestDirection(Map myMap, Position current) {
-		if (myMap.map[current.y][current.x] == Map.Tile.UNKNOWN.getValue()) {
-			//System.out.println(current + " is unknown");
-			return 0;
-		} else {
-			myMap.map[current.y][current.x] = Map.Tile.MARKED.getValue();
-			//System.out.println(current + " is marked");
-		}
-		for (int j = 1; j <= 8; j++) {
-			int[] diff = MUMap.aintDToM[j];
-			if (current.y + diff[1] >= myMap.map.length || current.y + diff[1] < 0) {
-				continue;
-			}
-			if (current.x + diff[0] >= myMap.map.length || current.x + diff[0] < 0) {
-				continue;
-			}
-			if (myMap.map[current.y + diff[1]][current.x + diff[0]] == Map.Tile.EMPTY.getValue() || 
-					myMap.map[current.y + diff[1]][current.x + diff[0]] == Map.Tile.UNKNOWN.getValue()) {
-				//System.out.println("looking at " + new Position(current.y + diff[1], current.x + diff[0]));
-				int newD = bestDirection(myMap, new Position(current.y + diff[1], current.x + diff[0]));
-				//System.out.println("returned " + newPos);
-				if (newD != -1) {
-					//System.out.println("****************** " + newPos);
-					return j;
-				}
-			}
-		}
-		return -1;
-	}
-	
 	public Position closestUnknown(Map myMap, Position current) {
-		if (myMap.map[current.y][current.x] == Map.Tile.UNKNOWN.getValue()) {
-			//System.out.println(current + " is unknown");
-			return current;
-		} else {
-			myMap.map[current.y][current.x] = Map.Tile.MARKED.getValue();
-			//System.out.println(current + " is marked");
-		}
+		myMap.map[current.y][current.x] = Map.Tile.MARKED.getValue();
+		//System.out.println(current + " is marked");
 		Random r = new Random();
 		int[] directions = {1, 2, 3, 4, 5, 6, 7, 8};
 		for (int i = 0; i < 7; i++) {
@@ -141,13 +101,15 @@ public class Explorer {
 			if (current.x + diff[0] >= myMap.map.length || current.x + diff[0] < 0) {
 				continue;
 			}
-			if (myMap.map[current.y + diff[1]][current.x + diff[0]] == Map.Tile.EMPTY.getValue() || 
-					myMap.map[current.y + diff[1]][current.x + diff[0]] == Map.Tile.UNKNOWN.getValue()) {
-				//System.out.println("looking at " + new Position(current.y + diff[1], current.x + diff[0]));
+			if (myMap.map[current.y + diff[1]][current.x + diff[0]] == Map.Tile.UNKNOWN.getValue()) {
+				return current;
+			}
+			if (myMap.map[current.y + diff[1]][current.x + diff[0]] == Map.Tile.EMPTY.getValue()) {
+				System.out.println("looking at " + new Position(current.y + diff[1], current.x + diff[0]));
 				Position newPos = closestUnknown(myMap, new Position(current.y + diff[1], current.x + diff[0]));
-				//System.out.println("returned " + newPos);
+				System.out.println("returned " + newPos);
 				if (newPos != null) {
-					//System.out.println("****************** " + newPos);
+					System.out.println("****************** " + newPos);
 					return newPos;
 				}
 			}
@@ -155,36 +117,46 @@ public class Explorer {
 		return null;
 	}
 	
-	public void generateBackTrack() {
+/*	public void generateBackTrack() {
 		Map newLeft = new Map("left", leftMap);
 		Map newRight = new Map("right", rightMap);
 		Position leftPos = closestUnknown(newLeft, leftMap.playerPos);
 		Position rightPos = closestUnknown(newRight, rightMap.playerPos);
-		System.out.println("Returned " + leftPos);
-		System.out.println("Returned " + rightPos);
-		backtrack = new Backtracker(leftMap, rightMap, leftPos, rightPos);
-	}
-	
-
-/*	public void generateBackTrack() {
-		Position leftPos = getFrontier(leftOpenList, leftMap);
-		Position rightPos = getFrontier(rightOpenList, rightMap);
-		if (leftPos == null) {
-			leftPos = leftOpenList.peek();
-		}
-		if (rightPos == null) {
-			rightPos = rightOpenList.peek();
-		}
+		//System.out.println("Returned " + leftPos);
+		//System.out.println("Returned " + rightPos);
 		backtrack = new Backtracker(leftMap, rightMap, leftPos, rightPos);
 	}*/
+	
+
+	public void generateBackTrack() {
+		Position leftPos = leftOpenList.pop();
+		Position rightPos = rightOpenList.pop();
+		System.out.println("Start Backtracker++");
+		backtrack = new Backtracker(leftMap, rightMap, leftPos, rightPos);
+		System.out.println("End Backtracker++");
+	}
 
 	public int countNewSpacesOpened(int[] diff, Map myMap, Position pos) {
 		int ret = 0;
 		Position newPos = pos.newPosFromOffset(diff[1], diff[0]);
 		if (myMap.map[newPos.y][newPos.x] == Map.Tile.EMPTY.getValue()) {
+			for (int i = -r; i <= r; i++) {
+				for (int j = -r; j <= r; j++) {
+					if (myMap.map[newPos.y + i][newPos.x + j] == Map.Tile.UNKNOWN.getValue()) {
+						ret++;
+					}
+				}
+			}
+		}
+		return ret;
+	}
+	
+	public int countSpacesOpen(Map myMap, Position pos) {
+		int ret = 0;
+		if (myMap.map[pos.y][pos.x] == Map.Tile.EMPTY.getValue()) {
 			for (int i = -((r / 2) + 1); i <= (r / 2) + 1; i++) {
 				for (int j = -((r / 2) + 1); j <= (r / 2) + 1; j++) {
-					if (myMap.map[newPos.y + i][newPos.x + j] == Map.Tile.UNKNOWN.getValue()) {
+					if (myMap.map[pos.y + i][pos.x + j] == Map.Tile.UNKNOWN.getValue()) {
 						ret++;
 					}
 				}
@@ -198,7 +170,7 @@ public class Explorer {
 		int nextX = rdmTemp.nextInt(3);
 		int nextY = rdmTemp.nextInt(3);
 		System.out.println("RANDOM");
-		System.exit(0);
+		//System.exit(0);
 		return MUMap.aintMToD[nextX][nextY];
 	}
 
