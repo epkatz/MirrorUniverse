@@ -10,7 +10,7 @@ public class Map {
 	public int[][] map;
 
 	public enum Tile {
-		UNKNOWN(8), BARRIER(1), EMPTY(0), EXIT(2);
+		UNKNOWN(8), BARRIER(1), EMPTY(0), EXIT(2), MARKED(9);
 		private int value;
 
 		private Tile(int value) {
@@ -59,6 +59,19 @@ public class Map {
 			}
 		}
 	}
+	
+	public Map(String name, Map oldmap) {
+		this.name = name;
+		playerPos = oldmap.playerPos;
+		exitPos = oldmap.exitPos;
+
+		map = new int[Config.MAX_SIZE][Config.MAX_SIZE];
+		for (int i = 0; i < map.length; i++) {
+			for (int j = 0; j < map.length; j++) {
+				map[i][j] = oldmap.map[i][j];
+			}
+		}
+	}
 
 	public void updatePlayer(int[] newPos) {
 
@@ -96,10 +109,11 @@ public class Map {
 				}
 			}
 		}
-		if (Config.DEBUG) {
-			//System.out.println(name + " has view\n" + whatIsee(view));
+		//if (Config.DEBUG) {
+			System.out.println(name + " has pos " + playerPos);
+			System.out.println(name + " has view\n" + whatIsee(view));
 			//System.out.println(name + " has map\n" + printMap());
-		}
+		//}
 
 	}
 
