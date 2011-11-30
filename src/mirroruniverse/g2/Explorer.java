@@ -56,16 +56,16 @@ public class Explorer {
 			return d;
 		}
 		while (backtrack == null || !backtrack.pathFound()) {
-			System.out.println("Before generateBackTrack");
+			//System.out.println("Before generateBackTrack");
 			generateBackTrack();
-			System.out.println("After generateBackTrack");
+			//System.out.println("After generateBackTrack");
 		}
-		System.out.println("Before getMove");
+		//System.out.println("Before getMove");
 		if (backtrack.pathFound())
 			d = backtrack.getMove();
 		else
 			d = this.randomness();
-		System.out.println("After getMove");
+		//System.out.println("After getMove");
 		//System.out.println("backtrack generated moves");
 		return d;
 	}
@@ -108,9 +108,9 @@ public class Explorer {
 				return current;
 			}
 			if (myMap.map[current.y + diff[1]][current.x + diff[0]] == Map.Tile.EMPTY.getValue()) {
-				System.out.println("looking at " + new Position(current.y + diff[1], current.x + diff[0]));
+				//System.out.println("looking at " + new Position(current.y + diff[1], current.x + diff[0]));
 				Position newPos = closestUnknown(myMap, new Position(current.y + diff[1], current.x + diff[0]));
-				System.out.println("returned " + newPos);
+				//System.out.println("returned " + newPos);
 				if (newPos != null) {
 					System.out.println("****************** " + newPos);
 					return newPos;
@@ -134,9 +134,9 @@ public class Explorer {
 	public void generateBackTrack() {
 		Position leftPos = leftOpenList.pop();
 		Position rightPos = rightOpenList.pop();
-		System.out.println("Start Backtracker++");
+		//System.out.println("Start Backtracker++");
 		backtrack = new Backtracker(leftMap, rightMap, leftPos, rightPos);
-		System.out.println("End Backtracker++");
+		//System.out.println("End Backtracker++");
 	}
 
 	public int countNewSpacesOpened(int[] diff, Map myMap, Position pos) {

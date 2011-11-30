@@ -28,7 +28,7 @@ public class WallFlower implements Player {
 	@Override
 	public int lookAndMove(int[][] aintViewL, int[][] aintViewR) {
 		turn++;
-		System.out.println("Turn: " + turn);
+		//System.out.println("Turn: " + turn);
 		/*if (turn > 5000) {
 			System.exit(0);
 		}*/
@@ -36,8 +36,9 @@ public class WallFlower implements Player {
 		rightMap.updateView(aintViewR);
 
 		// if we know the exits and no path found before
-		if (leftMap.exitPos != null && rightMap.exitPos != null && !routeFinder.pathFound())
-			 routeFinder.searchPath();
+		if (leftMap.exitPos != null && rightMap.exitPos != null && !routeFinder.pathFound()) {
+			routeFinder.searchPath();
+		}
 
 		int nextMove = -1;
 		
@@ -48,11 +49,7 @@ public class WallFlower implements Player {
 		} else {
 			if (Config.DEBUG)
 				System.out.println("Explore");
-			if (turn > 3000) {
-				nextMove = explorer.randomness();
-			} else {
 				nextMove = explorer.getMove(aintViewL, aintViewR);
-			}
 		}
 		
 		leftMap.updatePlayer(MUMap.aintDToM[nextMove]);

@@ -110,8 +110,8 @@ public class Map {
 			}
 		}
 		//if (Config.DEBUG) {
-			System.out.println(name + " has pos " + playerPos);
-			System.out.println(name + " has view\n" + whatIsee(view));
+			//System.out.println(name + " has pos " + playerPos);
+			//System.out.println(name + " has view\n" + whatIsee(view));
 			//System.out.println(name + " has map\n" + printMap());
 		//}
 
