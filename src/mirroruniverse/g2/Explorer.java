@@ -64,8 +64,11 @@ public class Explorer {
 			System.out.println("Best Count");
 			return d;
 		}
-		generateBackTrack();
+		while (backtrack == null || !backtrack.pathFound()) {
+			generateBackTrack();
+		}
 		d = backtrack.getMove();
+		System.out.println("backtrack generated moves");
 		return d;
 	}
 	
@@ -82,6 +85,36 @@ public class Explorer {
 		return null;
 	}
 	
+	public int bestDirection(Map myMap, Position current) {
+		if (myMap.map[current.y][current.x] == Map.Tile.UNKNOWN.getValue()) {
+			//System.out.println(current + " is unknown");
+			return 0;
+		} else {
+			myMap.map[current.y][current.x] = Map.Tile.MARKED.getValue();
+			//System.out.println(current + " is marked");
+		}
+		for (int j = 1; j <= 8; j++) {
+			int[] diff = MUMap.aintDToM[j];
+			if (current.y + diff[1] >= myMap.map.length || current.y + diff[1] < 0) {
+				continue;
+			}
+			if (current.x + diff[0] >= myMap.map.length || current.x + diff[0] < 0) {
+				continue;
+			}
+			if (myMap.map[current.y + diff[1]][current.x + diff[0]] == Map.Tile.EMPTY.getValue() || 
+					myMap.map[current.y + diff[1]][current.x + diff[0]] == Map.Tile.UNKNOWN.getValue()) {
+				//System.out.println("looking at " + new Position(current.y + diff[1], current.x + diff[0]));
+				int newD = bestDirection(myMap, new Position(current.y + diff[1], current.x + diff[0]));
+				//System.out.println("returned " + newPos);
+				if (newD != -1) {
+					//System.out.println("****************** " + newPos);
+					return j;
+				}
+			}
+		}
+		return -1;
+	}
+	
 	public Position closestUnknown(Map myMap, Position current) {
 		if (myMap.map[current.y][current.x] == Map.Tile.UNKNOWN.getValue()) {
 			//System.out.println(current + " is unknown");
@@ -90,7 +123,17 @@ public class Explorer {
 			myMap.map[current.y][current.x] = Map.Tile.MARKED.getValue();
 			//System.out.println(current + " is marked");
 		}
-		for (int j = 1; j <= 8; j++) {
+		Random r = new Random();
+		int[] directions = {1, 2, 3, 4, 5, 6, 7, 8};
+		for (int i = 0; i < 7; i++) {
+			int slot1 = r.nextInt(8);
+			int slot2 = r.nextInt(8);
+			int temp = directions[slot1];
+			directions[slot1] = directions[slot2];
+			directions[slot2] = temp;
+		}
+		for (int i = 0; i < directions.length; i++) {
+			int j = directions[i];
 			int[] diff = MUMap.aintDToM[j];
 			if (current.y + diff[1] >= myMap.map.length || current.y + diff[1] < 0) {
 				continue;
@@ -119,7 +162,6 @@ public class Explorer {
 		Position rightPos = closestUnknown(newRight, rightMap.playerPos);
 		System.out.println("Returned " + leftPos);
 		System.out.println("Returned " + rightPos);
-		//System.exit(0);
 		backtrack = new Backtracker(leftMap, rightMap, leftPos, rightPos);
 	}
 	
