@@ -61,7 +61,10 @@ public class Explorer {
 			System.out.println("After generateBackTrack");
 		}
 		System.out.println("Before getMove");
-		d = backtrack.getMove();
+		if (backtrack.pathFound())
+			d = backtrack.getMove();
+		else
+			d = this.randomness();
 		System.out.println("After getMove");
 		//System.out.println("backtrack generated moves");
 		return d;
