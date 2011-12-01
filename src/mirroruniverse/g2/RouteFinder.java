@@ -19,10 +19,10 @@ public class RouteFinder {
 	public RouteFinder(Map leftMap, Map rightMap) {
 		this.leftMap = leftMap;
 		this.rightMap = rightMap;
-		this.Astar = new MirrorUniverseAStar(leftMap, rightMap);
 	}
 
 	public boolean searchPath() {
+		this.Astar = new MirrorUniverseAStar(leftMap, rightMap);
 		// the initial state is the current position of the player
 		path = Astar.compute(new State(leftMap.playerPos, rightMap.playerPos));
 
