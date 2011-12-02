@@ -149,9 +149,9 @@ public class MirrorUniverseAStar extends AStar<State> {
 			this.needExplored = false;
 			Node root = new Node();
 			root.setState(start);
-			this.closedStates.clear();
+			//this.closedStates.clear();
 			this.fringe.clear();
-			this.hangingNodes.clear();
+			//this.hangingNodes.clear();
 
 			fringe.offer(root);
 

@@ -16,6 +16,7 @@ public class Map {
 		private Tile(int value) {
 			this.value = value;
 		}
+
 		public int getValue() {
 			return value;
 		}
@@ -24,6 +25,13 @@ public class Map {
 	public boolean isExit(Position pos) {
 		if (exitPos != null)
 			if (exitPos.x == pos.x && exitPos.y == pos.y)
+				return true;
+		return false;
+	}
+
+	public boolean isExit(int x, int y) {
+		if (exitPos != null)
+			if (exitPos.x == x && exitPos.y == y)
 				return true;
 		return false;
 	}
@@ -37,12 +45,29 @@ public class Map {
 		return false;
 	}
 
+	public boolean isUnknown(int x, int y) {
+		if (x < 0 || x >= Config.MAX_SIZE || y < 0 || y >= Config.MAX_SIZE)
+			return false;
+		if (map[y][x] == Tile.UNKNOWN.value)
+			return true;
+		return false;
+	}
+
 	public boolean isValid(Position pos) {
 		if (pos.x < 0 || pos.x >= Config.MAX_SIZE || pos.y < 0
 				|| pos.y >= Config.MAX_SIZE)
 			return false;
 		if (map[pos.y][pos.x] == Tile.EMPTY.value
 				|| map[pos.y][pos.x] == Tile.EXIT.value)
+			return true;
+		return false;
+	}
+
+	public boolean isValid(int x, int y) {
+		if (x < 0 || x >= Config.MAX_SIZE || y < 0 || y >= Config.MAX_SIZE)
+			return false;
+		if (map[y][x] == Tile.EMPTY.value
+				|| map[y][x] == Tile.EXIT.value)
 			return true;
 		return false;
 	}
@@ -59,7 +84,7 @@ public class Map {
 			}
 		}
 	}
-	
+
 	public Map(String name, Map oldmap) {
 		this.name = name;
 		playerPos = oldmap.playerPos;
@@ -109,11 +134,11 @@ public class Map {
 				}
 			}
 		}
-		//if (Config.DEBUG) {
-			//System.out.println(name + " has pos " + playerPos);
-			//System.out.println(name + " has view\n" + whatIsee(view));
-			//System.out.println(name + " has map\n" + printMap());
-		//}
+		// if (Config.DEBUG) {
+		// System.out.println(name + " has pos " + playerPos);
+		// System.out.println(name + " has view\n" + whatIsee(view));
+		// System.out.println(name + " has map\n" + printMap());
+		// }
 
 	}
 

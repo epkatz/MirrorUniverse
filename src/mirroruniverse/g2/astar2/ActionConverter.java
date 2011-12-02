@@ -1,60 +1,53 @@
-package mirroruniverse.g2;
+package mirroruniverse.g2.astar2;
 
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
-import mirroruniverse.g2.astar.MirrorUniverseAStar;
 import mirroruniverse.g2.astar.State;
-import mirroruniverse.g2.astar2.Encoder;
-import mirroruniverse.g2.astar2.ExitPathSearcher;
-import mirroruniverse.sim.Player;
 
-public class RouteFinder {
-	Map leftMap;
-	Map rightMap;
-	ExitPathSearcher searcher;
-	List<Integer> path;
+public class ActionConverter {
+	public static List<Integer> convert(List<Integer> states) {
+		if (states == null)
+			return null;
+		LinkedList<Integer> actions = new LinkedList<Integer>();
 
-	public boolean pathFound() {
-		return path != null && path.size() != 0;
+		Iterator<Integer> iter = states.iterator();
+		Integer last = iter.next();
+		Integer current;
+		while (iter.hasNext()) {
+			current = iter.next();
+			int move = computeMove(last, current);
+			actions.add(move);
+			last = current;
+		}
+		
+		return actions;
 	}
 
-	public RouteFinder(Map leftMap, Map rightMap) {
-		this.leftMap = leftMap;
-		this.rightMap = rightMap;
-		this.searcher = new ExitPathSearcher(leftMap, rightMap);
-	}
+	public static int computeMove(Integer from, Integer to) {
+		int[] c1;
+		int[] c2;
+		int x1, y1, x2, y2;
+		c1 = Encoder.decode(from);
+		c2 = Encoder.decode(to);
+		x1 = c1[0];
+		y1 = c1[1];
+		x2 = c2[0];
+		y2 = c2[1];
+		
+//		int[] coordinates;
+//		System.out.println("From:");
+//		coordinates = Encoder.decode(from);
+//		for (int i = 0; i != coordinates.length; ++i)
+//			System.out.println(coordinates[i]);
+//
+//		System.out.println("To:");
+//		coordinates = Encoder.decode(to);
+//		for (int i = 0; i != coordinates.length; ++i)
+//			System.out.println(coordinates[i]);
 
-	public boolean searchPath() {
-		// the initial state is the current position of the player
-		int start = Encoder.encode(leftMap.playerPos.x, leftMap.playerPos.y, rightMap.playerPos.x, rightMap.playerPos.y);
-		int goal = Encoder.encode(leftMap.exitPos.x, leftMap.exitPos.y, rightMap.exitPos.x, rightMap.exitPos.y);
-
-		path = searcher.search(start, goal);
-
-		// remove the start position
-		if (path != null)
-			path.remove(0);
-		return path != null;
-	}
-
-	public int getMove() {
-		assert(!path.isEmpty());
-		State from = new State(leftMap.playerPos, rightMap.playerPos);
-		int[] coordinates = Encoder.decode(path.remove(0));
-		int x1 = coordinates[0];
-		int y1 = coordinates[1];
-		int x2 = coordinates[2];
-		int y2 = coordinates[3];
-		State to = new State(new Position(y1, x1), new Position(y2, x2));
-		return computeMove(from, to);
-	}
-
-	public static int computeMove(State from, State to) {
-		double x1, x2, y1, y2;
-		x1 = from.posLeft.x;
-		y1 = from.posLeft.y;
-		x2 = to.posLeft.x;
-		y2 = to.posLeft.y;
+		
 		int directionLeft = -1;
 
 		if (x1 == x2 && y1 == y2) {
@@ -77,10 +70,10 @@ public class RouteFinder {
 			directionLeft = 2; // up right (north east)
 		}
 
-		x1 = from.posRight.x;
-		y1 = from.posRight.y;
-		x2 = to.posRight.x;
-		y2 = to.posRight.y;
+		x1 = c1[2];
+		y1 = c1[3];
+		x2 = c2[2];
+		y2 = c2[3];
 		int directionRight = -1;
 
 		if (x1 == x2 && y1 == y2) {
@@ -108,5 +101,4 @@ public class RouteFinder {
 																	// none-zero
 																	// one
 	}
-
 }
