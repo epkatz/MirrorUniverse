@@ -1,54 +1,52 @@
-package mirroruniverse.g2.astar2;
+package mirroruniverse.g2;
 
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 
+import mirroruniverse.g2.astar.MirrorUniverseAStar;
 import mirroruniverse.g2.astar.State;
+import mirroruniverse.sim.Player;
 
-public class ActionConverter {
-	public static List<Integer> convert(List<Integer> states) {
-		if (states == null)
-			return null;
-		LinkedList<Integer> actions = new LinkedList<Integer>();
+public class RouteFinder_old {
+	Map leftMap;
+	Map rightMap;
+	MirrorUniverseAStar Astar;
+	List<State> path;
 
-		Iterator<Integer> iter = states.iterator();
-		Integer last = iter.next();
-		Integer current;
-		while (iter.hasNext()) {
-			current = iter.next();
-			int move = computeMove(last, current);
-			if(move != 0)
-				actions.add(move);
-			last = current;
-		}
-		
-		return actions;
+	public boolean pathFound() {
+		return path != null;
 	}
 
-	public static int computeMove(Integer from, Integer to) {
-		int[] c1;
-		int[] c2;
-		int x1, y1, x2, y2;
-		c1 = Encoder.decode(from);
-		c2 = Encoder.decode(to);
-		x1 = c1[0];
-		y1 = c1[1];
-		x2 = c2[0];
-		y2 = c2[1];
-		
-//		int[] coordinates;
-//		System.out.println("From:");
-//		coordinates = Encoder.decode(from);
-//		for (int i = 0; i != coordinates.length; ++i)
-//			System.out.println(coordinates[i]);
-//
-//		System.out.println("To:");
-//		coordinates = Encoder.decode(to);
-//		for (int i = 0; i != coordinates.length; ++i)
-//			System.out.println(coordinates[i]);
+	public RouteFinder_old(Map leftMap, Map rightMap) {
+		this.leftMap = leftMap;
+		this.rightMap = rightMap;
+	}
 
-		
+	public boolean searchPath() {
+		this.Astar = new MirrorUniverseAStar(leftMap, rightMap);
+		// the initial state is the current position of the player
+		path = Astar.compute(new State(leftMap.playerPos, rightMap.playerPos));
+
+		// remove the start position
+		if (path != null)
+			path.remove(0);
+		return path != null;
+	}
+
+	public int getMove() {
+		if (path.size() == 0) {
+			System.out.println("Why?!");
+		}
+		State from = new State(leftMap.playerPos, rightMap.playerPos);
+		State to = path.remove(0);
+		return computeMove(from, to);
+	}
+
+	public static int computeMove(State from, State to) {
+		double x1, x2, y1, y2, deltaX, deltaY, diagonal;
+		x1 = from.posLeft.x;
+		y1 = from.posLeft.y;
+		x2 = to.posLeft.x;
+		y2 = to.posLeft.y;
 		int directionLeft = -1;
 
 		if (x1 == x2 && y1 == y2) {
@@ -71,10 +69,10 @@ public class ActionConverter {
 			directionLeft = 2; // up right (north east)
 		}
 
-		x1 = c1[2];
-		y1 = c1[3];
-		x2 = c2[2];
-		y2 = c2[3];
+		x1 = from.posRight.x;
+		y1 = from.posRight.y;
+		x2 = to.posRight.x;
+		y2 = to.posRight.y;
 		int directionRight = -1;
 
 		if (x1 == x2 && y1 == y2) {
@@ -97,9 +95,11 @@ public class ActionConverter {
 			directionRight = 2; // up right (north east)
 		}
 
+		assert (directionLeft != -1 && directionRight != -1);
 		return directionLeft != 0 ? directionLeft : directionRight; // return
 																	// the
 																	// none-zero
 																	// one
 	}
+
 }

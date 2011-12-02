@@ -4,45 +4,44 @@ import java.util.List;
 
 import mirroruniverse.g2.astar.MirrorUniverseAStar;
 import mirroruniverse.g2.astar.State;
+import mirroruniverse.g2.astar2.ActionConverter;
+import mirroruniverse.g2.astar2.Encoder;
+import mirroruniverse.g2.astar2.ExitPathSearcher;
 import mirroruniverse.sim.Player;
 
 public class RouteFinder {
 	Map leftMap;
 	Map rightMap;
-	MirrorUniverseAStar Astar;
-	List<State> path;
-
-	public boolean pathFound() {
-		return path != null;
-	}
+	ExitPathSearcher searcher;
+	List<Integer> actions;
 
 	public RouteFinder(Map leftMap, Map rightMap) {
 		this.leftMap = leftMap;
 		this.rightMap = rightMap;
+		this.searcher = new ExitPathSearcher(leftMap, rightMap);
 	}
-
-	public boolean searchPath() {
-		this.Astar = new MirrorUniverseAStar(leftMap, rightMap);
-		// the initial state is the current position of the player
-		path = Astar.compute(new State(leftMap.playerPos, rightMap.playerPos));
-
-		// remove the start position
-		if (path != null)
-			path.remove(0);
-		return path != null;
+	
+	public boolean pathFound() {
+		return actions != null && actions.size() != 0;
 	}
-
+	
 	public int getMove() {
-		if (path.size() == 0) {
-			System.out.println("Why?!");
-		}
-		State from = new State(leftMap.playerPos, rightMap.playerPos);
-		State to = path.remove(0);
-		return computeMove(from, to);
+		return actions.remove(0);
+	}
+
+	public List<Integer> searchPath() {
+		// the initial state is the current position of the player
+		int start = Encoder.encode(leftMap.playerPos.x, leftMap.playerPos.y, rightMap.playerPos.x, rightMap.playerPos.y);
+		int goal = Encoder.encode(leftMap.exitPos.x, leftMap.exitPos.y, rightMap.exitPos.x, rightMap.exitPos.y);
+
+		List<Integer> path = searcher.search(start, goal);
+		actions = ActionConverter.convert(path);
+		
+		return actions;
 	}
 
 	public static int computeMove(State from, State to) {
-		double x1, x2, y1, y2, deltaX, deltaY, diagonal;
+		double x1, x2, y1, y2;
 		x1 = from.posLeft.x;
 		y1 = from.posLeft.y;
 		x2 = to.posLeft.x;
@@ -95,11 +94,9 @@ public class RouteFinder {
 			directionRight = 2; // up right (north east)
 		}
 
-		assert (directionLeft != -1 && directionRight != -1);
 		return directionLeft != 0 ? directionLeft : directionRight; // return
 																	// the
 																	// none-zero
 																	// one
 	}
-
 }

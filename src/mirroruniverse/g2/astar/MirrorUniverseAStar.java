@@ -149,10 +149,15 @@ public class MirrorUniverseAStar extends AStar<State> {
 			this.needExplored = false;
 			Node root = new Node();
 			root.setState(start);
+			//this.closedStates.clear();
+			this.fringe.clear();
+			//this.hangingNodes.clear();
 
 			fringe.offer(root);
 
 			for (;;) {
+				System.out.println("Queue Size:" + fringe.size());
+				
 				Node p = fringe.poll();
 
 				if (p == null) {
