@@ -4,32 +4,27 @@ import java.util.List;
 
 import mirroruniverse.g2.astar.MirrorUniverseAStar;
 import mirroruniverse.g2.astar.State;
-import mirroruniverse.g2.astar2.Encoder;
-import mirroruniverse.g2.astar2.ExitPathSearcher;
 import mirroruniverse.sim.Player;
 
 public class RouteFinder {
 	Map leftMap;
 	Map rightMap;
-	ExitPathSearcher searcher;
-	List<Integer> path;
+	MirrorUniverseAStar Astar;
+	List<State> path;
 
 	public boolean pathFound() {
-		return path != null && path.size() != 0;
+		return path != null;
 	}
 
 	public RouteFinder(Map leftMap, Map rightMap) {
 		this.leftMap = leftMap;
 		this.rightMap = rightMap;
-		this.searcher = new ExitPathSearcher(leftMap, rightMap);
 	}
 
 	public boolean searchPath() {
+		this.Astar = new MirrorUniverseAStar(leftMap, rightMap);
 		// the initial state is the current position of the player
-		int start = Encoder.encode(leftMap.playerPos.x, leftMap.playerPos.y, rightMap.playerPos.x, rightMap.playerPos.y);
-		int goal = Encoder.encode(leftMap.exitPos.x, leftMap.exitPos.y, rightMap.exitPos.x, rightMap.exitPos.y);
-
-		path = searcher.search(start, goal);
+		path = Astar.compute(new State(leftMap.playerPos, rightMap.playerPos));
 
 		// remove the start position
 		if (path != null)
@@ -38,19 +33,16 @@ public class RouteFinder {
 	}
 
 	public int getMove() {
-		assert(!path.isEmpty());
+		if (path.size() == 0) {
+			System.out.println("Why?!");
+		}
 		State from = new State(leftMap.playerPos, rightMap.playerPos);
-		int[] coordinates = Encoder.decode(path.remove(0));
-		int x1 = coordinates[0];
-		int y1 = coordinates[1];
-		int x2 = coordinates[2];
-		int y2 = coordinates[3];
-		State to = new State(new Position(y1, x1), new Position(y2, x2));
+		State to = path.remove(0);
 		return computeMove(from, to);
 	}
 
 	public static int computeMove(State from, State to) {
-		double x1, x2, y1, y2;
+		double x1, x2, y1, y2, deltaX, deltaY, diagonal;
 		x1 = from.posLeft.x;
 		y1 = from.posLeft.y;
 		x2 = to.posLeft.x;
@@ -103,6 +95,7 @@ public class RouteFinder {
 			directionRight = 2; // up right (north east)
 		}
 
+		assert (directionLeft != -1 && directionRight != -1);
 		return directionLeft != 0 ? directionLeft : directionRight; // return
 																	// the
 																	// none-zero
