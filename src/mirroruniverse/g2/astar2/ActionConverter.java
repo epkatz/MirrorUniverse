@@ -18,7 +18,8 @@ public class ActionConverter {
 		while (iter.hasNext()) {
 			current = iter.next();
 			int move = computeMove(last, current);
-			actions.add(move);
+			if(move != 0)
+				actions.add(move);
 			last = current;
 		}
 		
