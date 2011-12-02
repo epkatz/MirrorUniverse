@@ -30,6 +30,8 @@ public class RouteFinder {
 	}
 
 	public List<Integer> searchPath() {
+		if (leftMap.exitPos == null || rightMap.exitPos == null)
+			return null;
 		// the initial state is the current position of the player
 		int start = Encoder.encode(leftMap.playerPos.x, leftMap.playerPos.y, rightMap.playerPos.x, rightMap.playerPos.y);
 		int goal = Encoder.encode(leftMap.exitPos.x, leftMap.exitPos.y, rightMap.exitPos.x, rightMap.exitPos.y);

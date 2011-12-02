@@ -101,9 +101,8 @@ public class ExitPathSearcher extends MUAStar {
 		fringe.offer(root);
 
 		while (true) {
-//			System.out.println("Node Expanded:" + this.expandedCounter);
-//			System.out.println("Queue Size:" + fringe.size());
-//			System.out.println("Closed States:" + closedStates.size());
+			System.out.println("Queue Size:" + fringe.size());
+			System.out.println("Closed States:" + closedStates.size());
 			Node<Integer> n = fringe.poll();
 
 			if (n == null) {
