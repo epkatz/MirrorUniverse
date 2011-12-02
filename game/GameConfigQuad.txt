@@ -1,0 +1,2 @@
+5, 5, 7, -1, maps/g1Maps/secondbigmap1.txt, 5
+7, 3, 7, -1, maps/g1Maps/secondbigmap2.txt, 3

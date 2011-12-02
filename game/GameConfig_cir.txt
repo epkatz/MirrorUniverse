@@ -1,0 +1,2 @@
+21, 21, 21, -1, maps/CircularMaze_Left.txt, 5
+21, 21, 21, -1, maps/CircularMaze_Right.txt, 3

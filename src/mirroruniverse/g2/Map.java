@@ -8,13 +8,26 @@ public class Map {
 	public Position playerPos;
 	public Position exitPos;
 	public int[][] map;
-
+	public int[][] exploredMap;
+	public boolean leftComplete =false;
+	public boolean rightComplete = false;
+	//theval
+	public int sightRadius = 0;
+	public int xmin = 0;
+	public int xmax = 0;
+	public int ymin = 0;
+	public int ymax =0;
+	//theval end
 	public enum Tile {
-		UNKNOWN(8), BARRIER(1), EMPTY(0), EXIT(2);
+		UNKNOWN(8), BARRIER(1), EMPTY(0), EXIT(2), MARKED(9);
 		private int value;
 
 		private Tile(int value) {
 			this.value = value;
+		}
+		
+		public int getValue(){
+			return this.value;
 		}
 	};
 
@@ -50,9 +63,11 @@ public class Map {
 		exitPos = null;
 
 		map = new int[Config.MAX_SIZE][Config.MAX_SIZE];
+		exploredMap = new int[Config.MAX_SIZE][Config.MAX_SIZE];//theval;
 		for (int i = 0; i < map.length; i++) {
 			for (int j = 0; j < map.length; j++) {
 				map[i][j] = Tile.UNKNOWN.value;
+				exploredMap[i][j] = Tile.UNKNOWN.value;//theval
 			}
 		}
 	}
@@ -75,6 +90,15 @@ public class Map {
 
 	public void updateView(int[][] view) {
 		int center = view.length / 2;
+			
+		//theval
+		int a = playerPos.y ;
+		int b = playerPos.x ;
+		exploredMap[a][b] = 5;
+//				if(sightRadius == 0){
+//					sightRadius = 2;
+//				}
+//			updateExplorerMap(view);
 
 		for (int i = -view.length / 2; i <= view.length / 2; i++) {
 			for (int j = -view.length / 2; j <= view.length / 2; j++) {
@@ -93,11 +117,19 @@ public class Map {
 				}
 			}
 		}
-		if (Config.DEBUG) {
-			System.out.println(name + " has view\n" + whatIsee(view));
-			System.out.println(name + " has map\n" + printMap());
+		if (Config.DEBUG) {//Config.DEBUG
+			if(name.equals("Left")){
+				System.out.println(name + " has view\n" + whatIsee(view));
+				System.out.println(name + " has map\n" + printMap());
+				System.out.println(name + " has map\n" + printExploredMap());
+			}
+			
 		}
-
+		
+			//System.out.println(name + " has view\n" + whatIsee(view));
+			//System.out.println(name + " has map\n" + printMap());
+			//System.out.println(name + " has map\n" + printExploredMap());
+		
 	}
 
 	private String whatIsee(int[][] view) {
@@ -137,12 +169,61 @@ public class Map {
 		}
 		return ret;
 	}
+	private String printExploredMap() {
+		String ret = "   ";
+		for (int i = 0; i < exploredMap.length; i++) {
+			if (i < 10)
+				ret += i + "  ";
+			else
+				ret += i + " ";
+		}
+		ret += "\n";
+		for (int i = 0; i < exploredMap.length; i++) {
+			if (i < 10)
+				ret += i + "  ";
+			else
+				ret += i + " ";
+			for (int j = 0; j < exploredMap.length; j++) {
 
+				
+					ret += exploredMap[i][j] + "  ";
+			
+			}
+			ret += "\n";
+		}
+		return ret;
+	}
 	public boolean isLegalPosition(int v, int add) {
 		if (v + add < 0 || v + add >= Config.MAX_SIZE) {
 			return false;
 		}
 		return true;
+	}
+	
+	public void updateExplorerMap(int[][] view){
+		int center = view.length / 2;
+		int a = playerPos.y ;
+		int b = playerPos.x ;
+		exploredMap[a][b] = 5;
+		
+		for (int i = -view.length / 2; i <= view.length / 2; i++) {
+			for (int j = -view.length / 2; j <= view.length / 2; j++) {
+				if (!isLegalPosition(playerPos.y, i)
+						|| !isLegalPosition(playerPos.x, j)) {
+					continue;
+				}
+				if (map[playerPos.y + i][playerPos.x + j] == Tile.UNKNOWN.value) {
+					map[playerPos.y + i][playerPos.x + j] = view[center + i][center
+							+ j];
+				}
+				if (view[center + i][center + j] == 2) {
+					if (exitPos == null) {
+						exitPos = new Position(playerPos.y + i, playerPos.x + j);
+					}
+				}
+			}
+		}
+		
 	}
 
 }

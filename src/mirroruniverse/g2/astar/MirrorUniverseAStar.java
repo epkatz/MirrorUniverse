@@ -1,5 +1,6 @@
 package mirroruniverse.g2.astar;
 
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -14,16 +15,22 @@ public class MirrorUniverseAStar extends AStar<State> {
 	Map leftMap;
 	Map rightMap;
 	PriorityQueue<Node> hangingNodes;
-	protected PriorityQueue<Node> fringe;
-	protected HashSet<State> closedStates;
-	protected int expandedCounter;
 	protected int hangingNodesExpandedCounter;
 	boolean needExplored;
+
+	public class hangingNodesComparator implements Comparator<Node> {
+		@Override
+		public int compare(Node o1, Node o2) {
+			double h1 = o1.f - o1.g;
+			double h2 = o2.f - o2.g;
+			return (int) (h1 - h2);
+		}
+	}
 
 	public MirrorUniverseAStar(Map leftMap, Map rightMap) {
 		this.leftMap = leftMap;
 		this.rightMap = rightMap;
-		hangingNodes = new PriorityQueue<Node>();
+		hangingNodes = new PriorityQueue<Node>(1024, new hangingNodesComparator());
 		fringe = new PriorityQueue<Node>();
 		closedStates = new HashSet<State>();
 		expandedCounter = 0;
@@ -53,15 +60,14 @@ public class MirrorUniverseAStar extends AStar<State> {
 		return 1.0;
 	}
 
-	protected Double h(State from, State to) {
+	protected Double h(State from) {
 
-		// TODO Auto-generated method stub
 		double x1, x2, y1, y2, deltaX, deltaY, diagonal;
 
 		x1 = from.posLeft.x;
 		y1 = from.posLeft.y;
-		x2 = to.posLeft.x;
-		y2 = to.posLeft.y;
+		x2 = leftMap.exitPos.x;
+		y2 = leftMap.exitPos.y;
 		deltaX = Math.abs(x1 - x2);
 		deltaY = Math.abs(y1 - y2);
 		diagonal = Math.max(deltaX, deltaY);
@@ -70,8 +76,8 @@ public class MirrorUniverseAStar extends AStar<State> {
 
 		x1 = from.posRight.x;
 		y1 = from.posRight.y;
-		x2 = to.posRight.x;
-		y2 = to.posRight.y;
+		x2 = rightMap.exitPos.x;
+		y2 = rightMap.exitPos.y;
 		deltaX = Math.abs(x1 - x2);
 		deltaY = Math.abs(y1 - y2);
 		diagonal = Math.max(deltaX, deltaY);
@@ -79,29 +85,6 @@ public class MirrorUniverseAStar extends AStar<State> {
 		double distanceRight = diagonal;// + orthogonal;
 
 		return Math.max(distanceLeft, distanceRight);
-	}
-
-	protected Double f(Node p, State from, State to) {
-		Double g = g(from, to) + ((p.parent != null) ? p.parent.g : 0.0);
-		Double h = h(from, to);
-
-		p.g = g;
-		p.f = g + h;
-
-		return p.f;
-	}
-
-	protected void expand(Node node) {
-		List<State> successors = generateSuccessors(node);
-
-		for (State t : successors) {
-			Node newNode = new Node(node);
-			newNode.setState(t);
-			f(newNode, node.getState(), t);
-			fringe.offer(newNode);
-		}
-
-		expandedCounter++;
 	}
 
 	protected List<State> generateSuccessors(Node node) {
@@ -120,7 +103,7 @@ public class MirrorUniverseAStar extends AStar<State> {
 			// do not expand it, return directly
 			return successors;
 		}
-		
+
 		if (Config.DEBUG)
 			System.out.println("Expand:\n" + node.state);
 
@@ -176,12 +159,13 @@ public class MirrorUniverseAStar extends AStar<State> {
 					// if there are still unknown area during the search
 					if (this.needExplored)
 						return null;
-					
+
 					// search all the hanging nodes
 					if (Config.DEBUG)
 						System.out.println("No perfect path");
-					
-					ImperfectSolutionAStar isa = new ImperfectSolutionAStar(leftMap, rightMap, hangingNodes);
+
+					ImperfectSolutionAStar isa = new ImperfectSolutionAStar(
+							leftMap, rightMap, hangingNodes);
 					List<State> bestSolution = isa.getBestSolution();
 					this.hangingNodesExpandedCounter = isa.expandedCounter;
 					return bestSolution;

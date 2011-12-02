@@ -7,19 +7,20 @@ import java.util.PriorityQueue;
 import mirroruniverse.g2.Config;
 import mirroruniverse.g2.Map;
 import mirroruniverse.g2.Position;
-import mirroruniverse.g2.astar.AStar.Node;
 import mirroruniverse.sim.MUMap;
 
 public class ImperfectSolutionAStar extends MirrorUniverseAStar {
 
 	PriorityQueue<Node> hangingNodes;
-	int threshold;
+	double bestLocalCost;
+	double bestGlobalCost;
 
 	public ImperfectSolutionAStar(Map leftMap, Map rightMap,
 			PriorityQueue<Node> hangingNodes) {
 		super(leftMap, rightMap);
 		this.hangingNodes = hangingNodes;
-		threshold = Integer.MAX_VALUE;
+		bestLocalCost = Integer.MAX_VALUE;
+		bestGlobalCost = Integer.MAX_VALUE;
 	}
 
 	@Override
@@ -77,27 +78,30 @@ public class ImperfectSolutionAStar extends MirrorUniverseAStar {
 	}
 
 	public List<State> getBestSolution() {
-		List<State> bestSolution = null;
+		List<State> bestLocalSolution = null;
 		Node bestNode = null;
 
 		while (!hangingNodes.isEmpty()) {
 			this.closedStates.clear();
 			Node node = hangingNodes.poll();
-			List<State> solution = this.compute(node.state);
-			if (solution != null) {
-				int totalCost = solution.size();
-				if (totalCost < threshold) {
-					threshold = totalCost;
-					bestNode = node;
-					bestSolution = solution;
+			List<State> localSolution = this.compute(node.state);
+			if (localSolution != null) {
+				double localCost = localSolution.size();
+				if (localCost <= bestLocalCost) {
+					bestLocalCost = localCost;
+					double globalCost = localCost + node.g;
+					if (globalCost < bestGlobalCost) {
+						bestNode = node;
+						bestLocalSolution = localSolution;
+					}
 				}
 			}
 		}
 
-		assert (bestSolution != null);
+		assert (bestLocalSolution != null);
 		List<State> globalSolution = constructSolution(bestNode);
-		bestSolution.remove(0);
-		globalSolution.addAll(bestSolution);
+		bestLocalSolution.remove(0);
+		globalSolution.addAll(bestLocalSolution);
 		return globalSolution;
 	}
 
@@ -122,7 +126,7 @@ public class ImperfectSolutionAStar extends MirrorUniverseAStar {
 				}
 
 				// prune if there is a better solution
-				if (p.f >= threshold)
+				if (p.f > bestLocalCost)
 					return null;
 
 				expand(p);

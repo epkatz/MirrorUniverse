@@ -34,9 +34,10 @@ public class WallFlower implements Player {
 
 		int nextMove = -1;
 		
-		if (routeFinder.pathFound()) {
+		if (routeFinder.pathFound()) {//routeFinder.pathFound()
 			if (Config.DEBUG)
 				System.out.println("Follow the path");
+			System.out.println("Follow the path");
 			nextMove = routeFinder.getMove();
 		} else {
 			if (Config.DEBUG)

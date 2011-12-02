@@ -6,7 +6,7 @@ Created on Nov 20, 2011
 
 import random
 
-size = 21
+size = 51
 direction = [[1, 0], [0, -1], [-1, 0], [0, 1]]
 turnLeft = True
 

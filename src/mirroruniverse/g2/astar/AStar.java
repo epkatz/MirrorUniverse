@@ -117,7 +117,7 @@ public abstract class AStar<T> {
 	 *            The node we are reaching.
 	 * @return The estimated cost to reach an object.
 	 */
-	protected abstract Double h(T from, T to);
+	protected abstract Double h(T from);
 
 	/**
 	 * Generate the successors for a given node.
@@ -164,7 +164,7 @@ public abstract class AStar<T> {
 	 */
 	protected Double f(Node p, T from, T to) {
 		Double g = g(from, to) + ((p.parent != null) ? p.parent.g : 0.0);
-		Double h = h(from, to);
+		Double h = h(from);
 
 		p.g = g;
 		p.f = g + h;
