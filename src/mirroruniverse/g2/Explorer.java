@@ -172,7 +172,7 @@ public class Explorer {
 		Random rdmTemp = new Random();
 		int nextX = rdmTemp.nextInt(3);
 		int nextY = rdmTemp.nextInt(3);
-		System.out.println("RANDOM");
+		//System.out.println("RANDOM");
 		//System.exit(0);
 		return MUMap.aintMToD[nextX][nextY];
 	}
