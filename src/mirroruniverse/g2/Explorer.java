@@ -40,6 +40,12 @@ public class Explorer {
 			int[] diff = MUMap.aintDToM[i];
 			leftCount = countNewSpacesOpened(diff, leftMap, leftMap.playerPos);
 			rightCount = countNewSpacesOpened(diff, rightMap, rightMap.playerPos);
+			if (leftMap.exitPos != null && rightMap.exitPos == null) {
+				leftCount = 0;
+			}
+			if (rightMap.exitPos != null && leftMap.exitPos == null) {
+				rightCount = 0;
+			}
 			if (leftCount + rightCount > bestCount) {
 				bestCount = leftCount + rightCount;
 				d = i;
@@ -132,9 +138,21 @@ public class Explorer {
 	
 
 	public void generateBackTrack() {
-		Position leftPos = leftOpenList.pop();
-		Position rightPos = rightOpenList.pop();
+		Position leftPos;
+		Position rightPos;
 		//System.out.println("Start Backtracker++");
+		if (!leftOpenList.isEmpty()) {
+			leftPos = leftOpenList.pop();
+		} else {
+			Map newLeft = new Map("left", leftMap);
+			leftPos = closestUnknown(newLeft, leftMap.playerPos);
+		}
+		if (!rightOpenList.isEmpty()) {
+			rightPos = rightOpenList.pop();
+		} else {
+			Map newRight = new Map("right", rightMap);
+			rightPos = closestUnknown(newRight, rightMap.playerPos);
+		}
 		backtrack = new Backtracker(leftMap, rightMap, leftPos, rightPos);
 		//System.out.println("End Backtracker++");
 	}
