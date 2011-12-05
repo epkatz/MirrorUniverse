@@ -8,6 +8,7 @@ public class Map {
 	public Position playerPos;
 	public Position exitPos;
 	public int[][] map;
+	private int newMovesSinceLastCheck = 0;
 
 	public enum Tile {
 		UNKNOWN(8), BARRIER(1), EMPTY(0), EXIT(2), MARKED(9);
@@ -21,6 +22,14 @@ public class Map {
 			return value;
 		}
 	};
+	
+	public int getNewSpacesFound() {
+		return newMovesSinceLastCheck;
+	}
+	
+	public void resetNewSpacesFound() {
+		newMovesSinceLastCheck = 0;
+	}
 
 	public boolean isExit(Position pos) {
 		if (exitPos != null)
@@ -126,6 +135,7 @@ public class Map {
 				if (map[playerPos.y + i][playerPos.x + j] == Tile.UNKNOWN.value) {
 					map[playerPos.y + i][playerPos.x + j] = view[center + i][center
 							+ j];
+					newMovesSinceLastCheck++;
 				}
 				if (view[center + i][center + j] == 2) {
 					if (exitPos == null) {

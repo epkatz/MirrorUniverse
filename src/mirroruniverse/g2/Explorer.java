@@ -21,6 +21,19 @@ public class Explorer {
 		this.leftMap = leftMap;
 		this.rightMap = rightMap;
 	}
+	
+	/* Interface for seeing how many new spaces were found
+	 * Just call the get to find how many and then reset when you decide to execute A*
+	 */
+	
+	public int getNewSpacesUncovered() {
+		return leftMap.getNewSpacesFound() + rightMap.getNewSpacesFound();
+	}
+	
+	public void resetNewSpacesUncovered() {
+		leftMap.resetNewSpacesFound();
+		rightMap.resetNewSpacesFound();
+	}
 
 	public int getMove(int[][] aintViewL, int[][] aintViewR) {
 		if (r == -1) {
