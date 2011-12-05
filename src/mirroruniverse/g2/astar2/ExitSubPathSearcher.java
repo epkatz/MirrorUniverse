@@ -25,39 +25,47 @@ public class ExitSubPathSearcher extends MUAStar {
 			return successors;
 
 		int[] coordinates = Encoder.decode(node.state);
-		int x1 = coordinates[0];
-		int y1 = coordinates[1];
-		int x2 = coordinates[2];
-		int y2 = coordinates[3];
+		final int x1 = coordinates[0];
+		final int y1 = coordinates[1];
+		final int x2 = coordinates[2];
+		final int y2 = coordinates[3];
+		
+		int[] aintMove;
+		int deltaX, deltaY, newX1, newY1, newX2, newY2;
 
 		for (int i = 1; i != MUMap.aintDToM.length; ++i) {
-			int[] aintMove = MUMap.aintDToM[i];
-			int deltaX = aintMove[0];
-			int deltaY = aintMove[1];
+			aintMove = MUMap.aintDToM[i];
+			deltaX = aintMove[0];
+			deltaY = aintMove[1];
+			
+			newX1 = x1;
+			newY1 = y1;
+			newX2 = x2;
+			newY2 = y2;
 
 			if (!leftMap.isExit(x1, y1)) {
-				x1 += deltaX;
-				y1 += deltaY;
+				newX1 = x1 + deltaX;
+				newY1 = y1 + deltaY;
 
-				if (!leftMap.isValid(x1, y1)) {
+				if (!leftMap.isValid(newX1, newY1)) {
 					// if it's not valid, roll back
-					x1 -= deltaX;
-					y1 -= deltaY;
+					newX1 -= deltaX;
+					newY1 -= deltaY;
 				}
 			}
 
 			if (!rightMap.isExit(x2, y2)) {
-				x2 += deltaX;
-				y2 += deltaY;
+				newX2 = x2 + deltaX;
+				newY2 = y2 + deltaY;
 
-				if (!rightMap.isValid(x2, y2)) {
+				if (!rightMap.isValid(newX2, newY2)) {
 					// if it's not valid, roll back
-					x2 -= deltaX;
-					y2 -= deltaY;
+					newX2 -= deltaX;
+					newY2 -= deltaY;
 				}
 			}
 
-			Integer newState = Encoder.encode(x1, y1, x2, y2);
+			Integer newState = Encoder.encode(newX1, newY1, newX2, newY2);
 			if (!newState.equals(node.state)
 					&& (!closedStates.contains(newState)))
 				successors.add(newState);
@@ -75,6 +83,7 @@ public class ExitSubPathSearcher extends MUAStar {
 
 		while (!hangingNodes.isEmpty()) {
 			Node<Integer> candidate = hangingNodes.poll();
+			
 			List<Integer> subSolution = compute(candidate.state, minSubCost);
 			if (subSolution == null)
 				continue;
@@ -104,7 +113,8 @@ public class ExitSubPathSearcher extends MUAStar {
 			if (node == null)
 				return null;
 
-			if (node.f > depthLimit)
+			int[] c = Encoder.decode(node.state);
+			if (node.g > depthLimit)
 				return null;
 
 			if (this.isGoal(node.state))
