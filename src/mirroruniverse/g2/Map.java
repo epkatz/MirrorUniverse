@@ -164,7 +164,7 @@ public class Map {
 		return ret;
 	}
 
-	private String printMap() {
+	public String printMap() {
 		String ret = "   ";
 		for (int i = 0; i < map.length; i++) {
 			if (i < 10)

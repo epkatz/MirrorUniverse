@@ -103,11 +103,6 @@ public class BacktrackPathSearcher extends MUAStar {
 			y1 = coordinates[1];
 			x2 = coordinates[2];
 			y2 = coordinates[3];
-			
-//			System.out.println("Expand:");
-//			for (int c : coordinates)
-//				System.out.println(c);
-//			System.out.println("Closed:" + closedStates.size());
 
 			if ((x1 == gx1 && y1 == gy1) || (x2 == gx2 && y2 == gy2)) {
 				if (this.minDiff > n.h) {
@@ -115,8 +110,6 @@ public class BacktrackPathSearcher extends MUAStar {
 					if (this.minCost > n.f) {
 						this.minCost = n.f;
 						this.bestNode = n;
-						// short cut
-						return constructSolution(n);
 					}
 				}
 			}
