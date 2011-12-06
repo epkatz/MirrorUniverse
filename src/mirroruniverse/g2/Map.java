@@ -163,6 +163,12 @@ public class Map {
 		}
 		return ret;
 	}
+	
+	public boolean isObstacle(int x, int y) {
+		if (map[y][x] == Tile.BARRIER.value)
+			return true;
+		return false;
+	}
 
 	public String printMap() {
 		String ret = "   ";
