@@ -1,9 +1,9 @@
 
 package mirroruniverse.g2;
 
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
 
 import mirroruniverse.sim.MUMap;
@@ -15,11 +15,13 @@ public class Explorer {
 	LinkedList<Position> rightOpenList = new LinkedList<Position>();
 	public int r = -1;
 	public boolean allExplored = false;
-	Backtracker backtrack;
+	List<Integer> path;
+	Backtracker2 backtrack;
 
 	public Explorer(Map leftMap, Map rightMap) {
 		this.leftMap = leftMap;
 		this.rightMap = rightMap;
+		backtrack = new Backtracker2(leftMap, rightMap);
 	}
 	
 	/* Interface for seeing how many new spaces were found
@@ -74,18 +76,10 @@ public class Explorer {
 			}
 			return d;
 		}
-		while (backtrack == null || !backtrack.pathFound()) {
-			//System.out.println("Before generateBackTrack");
-			generateBackTrack();
-			//System.out.println("After generateBackTrack");
+		if (path == null || path.isEmpty()) {
+			path = generateBackTrack();
 		}
-		//System.out.println("Before getMove");
-		if (backtrack.pathFound())
-			d = backtrack.getMove();
-		else
-			d = this.randomness();
-		//System.out.println("After getMove");
-		//System.out.println("backtrack generated moves");
+		d = path.remove(0);
 		return d;
 	}
 	
@@ -150,7 +144,7 @@ public class Explorer {
 	}*/
 	
 
-	public void generateBackTrack() {
+	public List<Integer> generateBackTrack() {
 		Position leftPos;
 		Position rightPos;
 		//System.out.println("Start Backtracker++");
@@ -166,7 +160,11 @@ public class Explorer {
 			Map newRight = new Map("right", rightMap);
 			rightPos = closestUnknown(newRight, rightMap.playerPos);
 		}
-		backtrack = new Backtracker(leftMap, rightMap, leftPos, rightPos);
+		List<Integer> ret = backtrack.search(leftPos, rightPos);
+		if (ret.isEmpty()) {
+			return generateBackTrack();
+		}
+		return ret;
 		//System.out.println("End Backtracker++");
 	}
 
