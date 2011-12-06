@@ -38,11 +38,11 @@ public class WallFlower implements Player {
 		// if we know the exits and no path found before
 		if (leftMap.exitPos != null && rightMap.exitPos != null
 				&& !routeFinder.pathFound()) {
-			if (leftMap.getNewSpacesFound() + rightMap.getNewSpacesFound() > Config.NEW_SPACE_THRESHOLD || turn % Config.CHECKING_INTERVAL == 0) {
+			//if (leftMap.getNewSpacesFound() + rightMap.getNewSpacesFound() > Config.NEW_SPACE_THRESHOLD || turn % Config.CHECKING_INTERVAL == 0) {
 				routeFinder.searchPath();
 				leftMap.resetNewSpacesFound();
 				rightMap.resetNewSpacesFound();
-			}
+			//}
 		}
 
 		int nextMove = -1;

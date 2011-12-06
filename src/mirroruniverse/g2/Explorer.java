@@ -47,14 +47,21 @@ public class Explorer {
 			leftCount = countNewSpacesOpened(diff, leftMap, leftMap.playerPos);
 			rightCount = countNewSpacesOpened(diff, rightMap, rightMap.playerPos);
 			if (leftMap.exitPos != null && rightMap.exitPos == null) {
-				leftCount = 0;
+				if (rightCount > bestCount) {
+					bestCount = rightCount;
+					d = i;
+				}
 			}
 			if (rightMap.exitPos != null && leftMap.exitPos == null) {
-				rightCount = 0;
-			}
-			if (leftCount + rightCount > bestCount) {
-				bestCount = leftCount + rightCount;
-				d = i;
+				if (leftCount > bestCount) {
+					bestCount = leftCount;
+					d = i;
+				}
+			} else {
+				if (leftCount + rightCount > bestCount) {
+					bestCount = leftCount + rightCount;
+					d = i;
+				}
 			}
 		}
 		if (bestCount != 0) {
@@ -116,7 +123,7 @@ public class Explorer {
 				Position newPos = closestUnknown(myMap, new Position(current.y + diff[1], current.x + diff[0]));
 				//System.out.println("returned " + newPos);
 				if (newPos != null) {
-					System.out.println("****************** " + newPos);
+					//System.out.println("****************** " + newPos);
 					return newPos;
 				}
 			}
@@ -152,12 +159,16 @@ public class Explorer {
 			rightPos = closestUnknown(newRight, rightMap.playerPos);
 		}
 		List<Integer> ret = backtrack.search(leftPos, rightPos);
-		if (ret.isEmpty()) {
+		if (ret == null || ret.isEmpty()) {
 			return generateBackTrack();
 		}
 		return ret;
 		//System.out.println("End Backtracker++");
 	}
+	
+/*	public Position pullPosition(LinkedList<Position> list) {
+		
+	}*/
 
 	public int countNewSpacesOpened(int[] diff, Map myMap, Position pos) {
 		int ret = 0;
