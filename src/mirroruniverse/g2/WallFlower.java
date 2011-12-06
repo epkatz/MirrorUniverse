@@ -28,7 +28,7 @@ public class WallFlower implements Player {
 	@Override
 	public int lookAndMove(int[][] aintViewL, int[][] aintViewR) {
 		turn++;
-		// System.out.println("Turn: " + turn);
+		//System.out.println("Turn: " + turn);
 		/*
 		 * if (turn > 5000) { System.exit(0); }
 		 */

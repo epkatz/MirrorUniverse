@@ -53,7 +53,7 @@ public class Explorer {
 			int[] diff = MUMap.aintDToM[i];
 			leftCount = countNewSpacesOpened(diff, leftMap, leftMap.playerPos);
 			rightCount = countNewSpacesOpened(diff, rightMap, rightMap.playerPos);
-			/*if (rightMap.exitPos != null && leftMap.exitPos == null) {
+			if (rightMap.exitPos != null && leftMap.exitPos == null) {
 				if (leftCount > bestCount) {
 					bestCount = leftCount;
 					d = i;
@@ -63,12 +63,12 @@ public class Explorer {
 					bestCount = rightCount;
 					d = i;
 				}
-			} else {*/
+			} else {
 				if (leftCount + rightCount > bestCount) {
 					bestCount = leftCount + rightCount;
 					d = i;
 				}
-			//}
+			}
 		}
 		if (bestCount != 0) {
 			if (leftCount > 1) {
