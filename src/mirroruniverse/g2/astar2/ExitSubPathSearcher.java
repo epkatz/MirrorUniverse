@@ -10,11 +10,13 @@ import mirroruniverse.sim.MUMap;
 public class ExitSubPathSearcher extends MUAStar {
 
 	protected Queue<Node<Integer>> hangingNodes;
+	protected int minDiff;
 
 	public ExitSubPathSearcher(Map leftMap, Map rightMap,
-			Queue<Node<Integer>> hangingNodes) {
+			Queue<Node<Integer>> hangingNodes, int minDiff) {
 		super(leftMap, rightMap);
 		this.hangingNodes = hangingNodes;
+		this.minDiff = minDiff;
 	}
 
 	@Override
@@ -77,7 +79,7 @@ public class ExitSubPathSearcher extends MUAStar {
 	public List<Integer> search(Integer start, Integer goal) {
 		this.goal = goal;
 		List<Integer> bestSubSolution = null;
-		int minSubCost = Integer.MAX_VALUE;
+		int minSubCost = this.minDiff == Integer.MAX_VALUE ? Integer.MAX_VALUE : this.minDiff + 1;
 		int minCost = Integer.MAX_VALUE;
 		Node<Integer> bestCandidate = null;
 
@@ -97,8 +99,11 @@ public class ExitSubPathSearcher extends MUAStar {
 			}
 		}
 		
+		if (bestCandidate == null)
+			return null;
 		List<Integer> bestSolution = this.constructSolution(bestCandidate);
 		bestSubSolution.remove(0);
+		int diff = bestSubSolution.size();
 		bestSolution.addAll(bestSubSolution);
 		return bestSolution;
 	}

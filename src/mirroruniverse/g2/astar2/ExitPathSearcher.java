@@ -15,6 +15,7 @@ public class ExitPathSearcher extends MUAStar {
 	protected Queue<Node<Integer>> hangingNodes;
 	protected int hangingNodesExpandedCounter;
 	protected boolean needExplored;
+	protected int minDiff;
 
 	public ExitPathSearcher(Map leftMap, Map rightMap) {
 		super(leftMap, rightMap);
@@ -22,6 +23,7 @@ public class ExitPathSearcher extends MUAStar {
 		this.hangingNodes = new PriorityQueue<Node<Integer>>(
 				Config.DEFAULT_QUEUE_SIZE, cmp);
 		this.needExplored = false;
+		this.minDiff = 0;
 	}
 
 	public class HeuristicValueComparator implements Comparator<Node<Integer>> {
@@ -43,10 +45,10 @@ public class ExitPathSearcher extends MUAStar {
 		int y1 = coordinates[1];
 		int x2 = coordinates[2];
 		int y2 = coordinates[3];
-		
+
 		int[] aintMove;
 		int deltaX, deltaY, newX1, newY1, newX2, newY2;
-		
+
 		// if one of the players has reached the exit
 		if (leftMap.isExit(x1, y1) || rightMap.isExit(x2, y2)) {
 			// put it in hanging queue
@@ -60,8 +62,7 @@ public class ExitPathSearcher extends MUAStar {
 			aintMove = MUMap.aintDToM[i];
 			deltaX = aintMove[0];
 			deltaY = aintMove[1];
-			
-			
+
 			newX1 = x1 + deltaX;
 			newY1 = y1 + deltaY;
 			// if there is a position that is unknown on the left map
@@ -101,17 +102,28 @@ public class ExitPathSearcher extends MUAStar {
 		fringe.offer(root);
 
 		while (true) {
-			//System.out.println("Queue Size:" + fringe.size());
-			if(closedStates.size() % 1000000 == 0)
-			System.out.println("Closed States:" + closedStates.size());
+			// System.out.println("Queue Size:" + fringe.size());
+			if (closedStates.size() % 1000000 == 0)
+				System.out.println("Closed States:" + closedStates.size());
 			Node<Integer> n = fringe.poll();
 
 			if (n == null) {
-				if (this.needExplored == true)
+				if (this.needExplored == true) {
+					MinDiffCalculator mdc = new MinDiffCalculator(leftMap,
+							rightMap, this.closedStates);
+					List<Integer> dist = mdc.search(goal, start);
+					if (dist != null) {
+						this.minDiff = dist.size() - 1;
+						ExitSubPathSearcher esps = new ExitSubPathSearcher(
+								leftMap, rightMap, hangingNodes, this.minDiff);
+						//this.hangingNodesExpandedCounter = esps.expandedCounter;
+						return esps.search(null, goal);
+					}
 					break;
+				}
 				this.closedStates.clear();
 				ExitSubPathSearcher esps = new ExitSubPathSearcher(leftMap,
-						rightMap, hangingNodes);
+						rightMap, hangingNodes, Integer.MAX_VALUE);
 				this.hangingNodesExpandedCounter = esps.expandedCounter;
 				return esps.search(null, goal);
 			}
@@ -132,5 +144,6 @@ public class ExitPathSearcher extends MUAStar {
 		this.expandedCounter = 0;
 		this.hangingNodesExpandedCounter = 0;
 		this.needExplored = false;
+		this.minDiff = 0;
 	}
 }
