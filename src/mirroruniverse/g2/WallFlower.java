@@ -28,20 +28,25 @@ public class WallFlower implements Player {
 	@Override
 	public int lookAndMove(int[][] aintViewL, int[][] aintViewR) {
 		turn++;
-		//System.out.println("Turn: " + turn);
-		/*if (turn > 5000) {
-			System.exit(0);
-		}*/
+		// System.out.println("Turn: " + turn);
+		/*
+		 * if (turn > 5000) { System.exit(0); }
+		 */
 		leftMap.updateView(aintViewL);
 		rightMap.updateView(aintViewR);
 
 		// if we know the exits and no path found before
-		if (leftMap.exitPos != null && rightMap.exitPos != null && !routeFinder.pathFound()) {
-			routeFinder.searchPath();
+		if (leftMap.exitPos != null && rightMap.exitPos != null
+				&& !routeFinder.pathFound()) {
+			if (leftMap.getNewSpacesFound() + rightMap.getNewSpacesFound() > Config.NEW_SPACE_THRESHOLD || turn % Config.CHECKING_INTERVAL == 0) {
+				routeFinder.searchPath();
+				leftMap.resetNewSpacesFound();
+				rightMap.resetNewSpacesFound();
+			}
 		}
 
 		int nextMove = -1;
-		
+
 		if (routeFinder.pathFound()) {
 			if (Config.DEBUG)
 				System.out.println("Follow the path");
@@ -49,9 +54,9 @@ public class WallFlower implements Player {
 		} else {
 			if (Config.DEBUG)
 				System.out.println("Explore");
-				nextMove = explorer.getMove(aintViewL, aintViewR);
+			nextMove = explorer.getMove(aintViewL, aintViewR);
 		}
-		
+
 		leftMap.updatePlayer(MUMap.aintDToM[nextMove]);
 		rightMap.updatePlayer(MUMap.aintDToM[nextMove]);
 		return nextMove;
