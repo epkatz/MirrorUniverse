@@ -33,6 +33,13 @@ public class Explorer {
 			r = aintViewL.length / 2;
 		}
 		int d = nextBestSearch();
+		int[] diff = MUMap.aintDToM[d];
+		while (leftMap.map[leftMap.playerPos.y+diff[1]][leftMap.playerPos.x+diff[0]] == Map.Tile.EXIT.getValue() ||
+			rightMap.map[rightMap.playerPos.y+diff[1]][rightMap.playerPos.x+diff[0]] == Map.Tile.EXIT.getValue()) {
+			d = fallback();
+			diff = MUMap.aintDToM[d];
+			path.clear();
+		}
 		//System.out.println(d);
 		return d;
 	}
@@ -280,11 +287,11 @@ public class Explorer {
 		return ret;
 	}
 
-/*	public int randomness() {
+	public int fallback() {
 		Random rdmTemp = new Random();
 		int nextX = rdmTemp.nextInt(3);
 		int nextY = rdmTemp.nextInt(3);
 		return MUMap.aintMToD[nextX][nextY];
-	}*/
+	}
 
 }
