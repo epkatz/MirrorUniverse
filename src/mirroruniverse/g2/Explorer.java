@@ -34,13 +34,15 @@ public class Explorer {
 		}
 		int d = nextBestSearch();
 		int[] diff = MUMap.aintDToM[d];
-		while (leftMap.map[leftMap.playerPos.y+diff[1]][leftMap.playerPos.x+diff[0]] == Map.Tile.EXIT.getValue() ||
-			rightMap.map[rightMap.playerPos.y+diff[1]][rightMap.playerPos.x+diff[0]] == Map.Tile.EXIT.getValue()) {
+		while (leftMap.steppingOnExit(diff) || rightMap.steppingOnExit(diff)) {
 			d = fallback();
 			diff = MUMap.aintDToM[d];
-			path.clear();
+			if (path != null) {
+				path.clear();
+			}
+			System.out.println("Hit Random");
 		}
-		//System.out.println(d);
+		System.out.println("in get move");
 		return d;
 	}
 
@@ -90,6 +92,9 @@ public class Explorer {
 						}
 					}
 				}
+			}
+			if (path != null) {
+				path.clear();
 			}
 			return d;
 		}

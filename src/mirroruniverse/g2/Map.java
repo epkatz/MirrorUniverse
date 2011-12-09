@@ -106,6 +106,15 @@ public class Map {
 			}
 		}
 	}
+	
+	public boolean steppingOnExit(int[] diff) {
+		if (exitPos != null) {
+			if (playerPos.x + diff[0]== exitPos.x && playerPos.y + diff[1] == exitPos.y) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 	public void updatePlayer(int[] newPos) {
 
@@ -114,6 +123,7 @@ public class Map {
 
 			if (exitPos != null) {
 				if (playerPos.x == exitPos.x && playerPos.y == exitPos.y) {
+					System.exit(0);
 					return;
 				}
 			}

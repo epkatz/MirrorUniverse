@@ -48,13 +48,19 @@ public class WallFlower implements Player {
 		int nextMove = -1;
 
 		if (routeFinder.pathFound()) {
-			if (Config.DEBUG)
+			//if (Config.DEBUG)
 				System.out.println("Follow the path");
 			nextMove = routeFinder.getMove();
 		} else {
-			if (Config.DEBUG)
+			//if (Config.DEBUG)
 				System.out.println("Explore");
 			nextMove = explorer.getMove(aintViewL, aintViewR);
+		}
+		int[] diff = MUMap.aintDToM[nextMove];
+		System.out.println("Currently at " + rightMap.playerPos);
+		System.out.println("Moving to (" + diff[1] + "," + diff[0] + ")");
+		if (rightMap.exitPos != null) {
+			System.out.println(rightMap.exitPos);
 		}
 
 		leftMap.updatePlayer(MUMap.aintDToM[nextMove]);
